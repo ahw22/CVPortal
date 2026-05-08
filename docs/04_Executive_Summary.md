@@ -60,7 +60,7 @@ Jeder Teilnehmer erhält eine **persönliche Web-Visitenkarte** unter der URL `/
 | Bereich | Technologie |
 |---------|------------|
 | Sprache | Java 21 |
-| Backend-Framework | Spring Boot 3, Spring Security 6, Spring Data JPA |
+| Backend-Framework | Spring Boot 4, Spring Security 6, Spring Data JPA |
 | Authentifizierung | JWT (jjwt-Bibliothek) |
 | Datenbank | H2 (embedded, Datei-Modus) |
 | Frontend-Framework | Spring Boot 4 + Thymeleaf + Bootstrap 5 |
