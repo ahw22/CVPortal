@@ -42,9 +42,3 @@ Gesamtaufwand ca. 80 Stunden.
 - **JWT-Flow** im Browser-DevTools (Authorization-Header, Token-Inhalt)
 - **Öffentliche Visitenkarte** ohne Login aufrufbar – sofort beeindruckend in der Demo
 - **QR-Code** auf der Visitenkarte (ZXing)
-
----
-
-## Hinweis für Schüler
-
-Name und Unterschriften in `01_Anmeldung_betriebliches_Projekt.md` sind individuell auszufüllen. Alle anderen Inhalte können als vollständige Vorlage für die Einreichung übernommen und angepasst werden.

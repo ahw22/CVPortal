@@ -401,7 +401,7 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
-**Öffentliche Endpunkte** (`/api/card/**`, `/api/cv/public/**`) werden zusätzlich ohne CORS-Einschränkung freigegeben, da auch externe Browser (potenzieller Arbeitgeber) darauf zugreifen können sollen.
+**Öffentliche Endpunkte** (`/api/card/**`, `/api/cv/public/**`) 
 
 ### JWT-Authentifizierungsfluss
 

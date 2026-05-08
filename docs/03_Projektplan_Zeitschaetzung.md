@@ -166,8 +166,12 @@ Woche 8:  ████████████████████         P
 
 | Risiko | Wahrscheinlichkeit | Gegenmaßnahme |
 |--------|-------------------|---------------|
-| JWT-Integration komplexer als geplant | hoch | Spring Security Docs + Beispielprojekte vorab studieren; früh (Phase 2) beginnen |
-| CORS-Probleme im Browser | mittel | Browser DevTools für Diagnose; CORS-Config früh testen (Ende Phase 2) |
-| Frontend-Backend-Integration schlägt fehl | mittel | API zuerst isoliert mit REST-Client (Bruno/Postman) testen |
+| Spring Security/JWT komplexer als geplant | hoch | Spring Security Docs + Beispielprojekte vorab studieren; früh (Phase 2) beginnen |
+| CORS-Probleme im Browser | mittel | CORS-Config früh testen (Ende Phase 2) |
+| Frontend-Backend-Integration schlägt fehl | niedrig | API zuerst isoliert mit REST-Client (Postman) testen |
 | Zeitüberschreitung beim Frontend-Design | mittel | Wunschkriterien (W02 PDF-Export) als letztes; Puffer in Phase 9 |
-| Zwei laufende Apps erhöhen Entwicklungskomplexität | mittel | Klare Port-Trennung; beide Apps per Skript starten |
+| Zwei laufende Apps erhöhen Entwicklungskomplexität | mittel | Klare Port-Trennung; beide Apps per Skript oder als Docker Container starten |
+| H2-Datei-Lock bei Parallelzugriff | niedrig | H2 im Auto-Mixed-Mode betreiben; Backend nur einmal starten |
+| Benutzername mit Sonderzeichen bricht URL-Routing (/cv/{username}) |niedrig |Whitelist für Benutzernamen (nur A-Z, 0-9, Bindestrich); URL-Encoding sicherstellen |
+| PDF-Export (W02) unterschätzt | mittel | Flying Saucer rendert HTML nur eingeschränkt → vorab Proof-of-Concept; ggf. auf Alternativen ausweichen |
+| Stunden-Puffer zu knapp | mittel | Phase 9 (Doku) hat 15h – bei Verzug Wunschkriterien W02/W04 streichen |
