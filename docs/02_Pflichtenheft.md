@@ -29,6 +29,7 @@ cvportal-backend (Spring Boot, Port 8080)
       ▼
 H2 Database (embedded im Backend)
 
+```
 
 ---
 
