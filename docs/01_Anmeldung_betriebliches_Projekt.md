@@ -18,6 +18,8 @@
 
 ## Executive Summary / Kurze Beschreibung des zu erstellenden Programmes
 
+*Diese Kurzfassung beantwortet die Leitfragen des Anmeldeformulars. Eine ausführliche, zweiseitige Fassung liegt als `04_Executive_Summary.md` diesem Antrag bei.*
+
 ### Welches Problem soll gelöst werden?
 
 BBRZ-Teilnehmer absolvieren Aus- und Weiterbildungsmaßnahmen mit dem Ziel der (Wieder-)Eingliederung in den Arbeitsmarkt. Ein zentrales Ergebnis dieser Ausbildungen ist ein professioneller Lebenslauf. Aktuell erstellen Teilnehmer ihre Lebensläufe lokal in Word oder ähnlichen Programmen – ohne einheitliche Struktur, ohne einfache Teilungsmöglichkeit und ohne digitale Sichtbarkeit. **CVPortal** löst dieses Problem durch eine zentrale, webbasierte Plattform, auf der Lebensläufe strukturiert erfasst, verwaltet und als öffentliche Web-Visitenkarte geteilt werden können.
@@ -31,7 +33,7 @@ BBRZ-Teilnehmer, die ihren Lebenslauf potenziellen Arbeitgebern unkompliziert di
 Plattformen wie LinkedIn oder Xing erfordern eine öffentliche Registrierung, sind auf Englisch ausgerichtet und für Teilnehmer in der Wiedereingliederung oft eine Hemmschwelle. **CVPortal** ist:
 - **BBRZ-intern** – keine öffentliche Social-Media-Präsenz nötig
 - **niederschwellig** – einfache strukturierte Eingabe, kein Design-Know-how nötig
-- **teilbar** – jeder Teilnehmer erhält eine persönliche Web-Visitenkarte mit QR-Code
+- **teilbar** – jeder Teilnehmer erhält eine persönliche Web-Visitenkarte (optional mit QR-Code, Wunschkriterium W01)
 - **mehrsprachig vorbereitet** – Inhalte können auf Deutsch und Englisch erfasst werden
 - **technisch modern** – getrennte Backend/Frontend-Architektur mit REST-API
 
@@ -39,7 +41,7 @@ Plattformen wie LinkedIn oder Xing erfordern eine öffentliche Registrierung, si
 
 - **Backend-API** (Spring Boot, Port 8080): REST-Endpunkte für alle Datenzugriffe, CORS-konfiguriert
 - **Frontend** (separates Spring Boot Projekt, Port 8081): Benutzeroberfläche mit Thymeleaf und Bootstrap 5, kommuniziert ausschließlich über die REST-API mit dem Backend
-- **Web-Visitenkarte**: QR-Code-Link zu öffentlich zugängliche Profilseite pro Teilnehmer mit vollständigem Lebenslauf
+- **Web-Visitenkarte**: Öffentlich zugängliche Profilseite pro Teilnehmer mit Link zum vollständigen Lebenslauf (sofern freigegeben); optional mit QR-Code (Wunschkriterium W01)
 - **Rollenkonzept**: Admin (Berater), Teilnehmer – jeweils mit eigenem Funktionsumfang
 - **Sicherheit**: JWT-basierte Authentifizierung, CORS-Policy, Eingabevalidierung
 

@@ -36,22 +36,28 @@ Diese Architektur erfordert eine explizite **CORS-Konfiguration** (Cross-Origin 
 Jeder Teilnehmer erhält eine **persönliche Web-Visitenkarte** unter der URL `/card/{benutzername}`:
 - Immer öffentlich zugänglich – kein Login nötig
 - Zeigt Name, Berufsbezeichnung, Kurzprofil und Kontaktdaten
-- Enthält einen **QR-Code**, der auf diese Seite verweist – ideal für Jobmessen oder Bewerbungsunterlagen
+- Enthält einen **QR-Code** (Wunschkriterium W01), der auf diese Seite verweist – ideal für Jobmessen oder Bewerbungsunterlagen
 - Link zum vollständigen Lebenslauf (sofern vom Teilnehmer freigegeben)
 
 ---
 
-## Kernfunktionen
+## Kernfunktionen (Pflicht)
 
 | Funktion | Beschreibung |
 |----------|-------------|
 | Strukturierter Lebenslauf | Berufserfahrung, Ausbildung, Kenntnisse, Sprachen |
-| Web-Visitenkarte | Öffentliche Profilseite mit QR-Code |
+| Web-Visitenkarte | Öffentliche Profilseite mit Kontaktdaten |
 | Öffentlicher CV-Link | Freigebbarer Lebenslauf per URL |
 | JWT-Authentifizierung | Sichere tokenbasierte Anmeldung |
 | CORS-Architektur | Zwei getrennte Apps, professionell integriert |
 | Admin-Übersicht | Berater sehen alle Teilnehmerprofile |
-| PDF-Export | Lebenslauf als Datei herunterladen (Wunschkriterium) |
+
+## Erweiterungen (Wunschkriterien)
+
+| Funktion | Beschreibung |
+|----------|-------------|
+| QR-Code | Auf der Visitenkarte, verweist auf deren URL (W01) |
+| PDF-Export | Lebenslauf als Datei herunterladen (W02) |
 
 ---
 
@@ -60,7 +66,7 @@ Jeder Teilnehmer erhält eine **persönliche Web-Visitenkarte** unter der URL `/
 | Bereich | Technologie |
 |---------|------------|
 | Sprache | Java 21 |
-| Backend-Framework | Spring Boot 4, Spring Security 6, Spring Data JPA |
+| Backend-Framework | Spring Boot 4, Spring Security 7, Spring Data JPA |
 | Authentifizierung | JWT (jjwt-Bibliothek) |
 | Datenbank | H2 (embedded, Datei-Modus) |
 | Frontend-Framework | Spring Boot 4 + Thymeleaf + Bootstrap 5 |
@@ -82,4 +88,4 @@ Das Projekt verbindet praxisrelevante Themen der modernen Softwareentwicklung mi
 
 ---
 
-*Dieses Projekt erfüllt alle Pflichtanforderungen des betrieblichen Projekts nach § 11 der Ausbildungsordnung Applikationsentwicklung – Coding: eigenständig lauffähige Applikation, Datenbankanbindung (H2/JPA), webbasiert und responsive (Bootstrap 5), Sicherheitskonzept (JWT, BCrypt, CORS), Entwicklungssprache Java, Programmieraufwand ≥ 50 Stunden.*
+*Dieses Projekt erfüllt alle Pflichtanforderungen des betrieblichen Projekts nach § 11 der Ausbildungsordnung Applikationsentwicklung – Coding: eigenständig lauffähige Applikation, Datenbankanbindung (H2/JPA), webbasiert und responsive (Bootstrap 5), Sicherheitskonzept (JWT, Argon2id, CORS), Entwicklungssprache Java, Programmieraufwand ≥ 50 Stunden.*

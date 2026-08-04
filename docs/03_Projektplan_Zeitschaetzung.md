@@ -2,9 +2,10 @@
 ## CVPortal – Webbasiertes Lebenslauf- und Profilmanagementsystem
 
 **Gesamtaufwand:** ca. 98 Stunden
-**Reiner Programmieraufwand:** ca. 71 Stunden
-**Testaufwand:** ca. 13 Stunden
-**Dokumentation:** ca. 15 Stunden
+**Planungsaufwand:** ca. 13 Stunden (Phase 1)
+**Reiner Programmieraufwand:** ca. 57 Stunden (Phasen 2–7)
+**Testaufwand:** ca. 13 Stunden (Phase 8)
+**Dokumentation:** ca. 15 Stunden (Phase 9)
 
 ---
 
@@ -16,7 +17,7 @@
 | M2 | Backend-Grundlage: Auth, DB, CORS lauffähig | 2 | JWT-Login funktioniert, CORS verifiziert |
 | M3 | Backend vollständig: alle REST-Endpunkte | 3–4 | API vollständig, via REST-Client testbar |
 | M4 | Frontend vollständig: alle Seiten, API-Calls | 5–6 | Vollständige Web-App nutzbar |
-| M5 | Visitenkarte + QR-Code umgesetzt | 6 | Öffentliche Karte mit QR-Code abrufbar |
+| M5 | Visitenkarte umgesetzt (QR-Code optional, W01) | 6 | Öffentliche Karte, ggf. mit QR-Code abrufbar |
 | M6 | Tests abgeschlossen, alle Bugs behoben | 7 | Alle 12 Testfälle bestanden |
 | M7 | Dokumentation und Abgabe | 8 | Vollständige Abgabe beider Projekte |
 
@@ -66,7 +67,7 @@
 |---------|---------|
 | `ApiClientService`: RestTemplate konfigurieren, JWT-Header setzen | 2 h |
 | Login- und Registrierungsseite + `PageController` | 2 h |
-| JWT im SessionStorage speichern; automatische Weiterleitung bei abgelaufenem Token | 1 h |
+| JWT in HttpSession speichern (Frontend-Server); automatische Weiterleitung bei abgelaufenem Token | 1 h |
 | **Summe Phase 4** | **5 h** |
 
 ### Phase 5 – Frontend: Lebenslauf-Bearbeitung (14 h)
@@ -79,7 +80,7 @@
 | Berufserfahrungs-Verwaltung (Liste + Anlegen/Bearbeiten-Modal) | 2 h |
 | Ausbildungs-Verwaltung | 2 h |
 | Kenntnisse und Sprachen-Verwaltung | 2 h |
-| Sichtbarkeits-Toggle (öffentlich / privat) | 2 h |
+| Sichtbarkeits-Toggle (öffentlich / privat) – inkl. direktem Browser-`fetch()` für CORS-Demo | 2 h |
 | **Summe Phase 5** | **14 h** |
 
 ### Phase 6 – Frontend: Öffentliche Ansichten (6 h)
@@ -143,7 +144,7 @@
 | 9 | Dokumentation und Abschluss | 15 h |
 | | **Gesamt** | **98 h** |
 
-**Reiner Programmieraufwand** (Phase 1 Coding-Anteil + Phasen 2–7): ~71 h (Mindestanforderung: 50 h)
+**Reiner Programmieraufwand** (Phasen 2–7): 57 h (Mindestanforderung: 50 h) – zzgl. 13 h Planung (Phase 1), 13 h Testing (Phase 8) und 15 h Dokumentation (Phase 9) ergibt das den Gesamtaufwand von 98 h.
 
 ---
 

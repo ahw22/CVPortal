@@ -2,8 +2,9 @@
 ## CVPortal – Webbasiertes Lebenslauf- und Profilmanagementsystem
 
 **Projektbezeichnung:** CVPortal
-**Version:** 1.0
+**Version:** 1.4
 **Erstellt am:** 08.05.2026
+**Letzte Überarbeitung:** 17.07.2026 (Korrekturen gemäß Rückmeldung der Prüfungskommission: Kommunikationsmodell, Datenschutz, Wunschkriterien-Kennzeichnung; Klarstellung M05/W04; QR-Code bleibt Wunschkriterium W01; JWT-Speicherung auf HttpSession korrigiert)
 
 ### Systemarchitektur (Überblick)
 
@@ -21,7 +22,7 @@ Browser (Port 8081)
       │  HTTP-Request (Thymeleaf-Seite)
       ▼
 cvportal-frontend (Spring Boot, Port 8081)
-      │  REST-Call via JavaScript fetch() / RestTemplate
+      │  REST-Call via RestTemplate (serverseitig, kein CORS)
       │  → Origin: http://localhost:8081
       ▼
 cvportal-backend (Spring Boot, Port 8080)
@@ -29,6 +30,8 @@ cvportal-backend (Spring Boot, Port 8080)
       ▼
 H2 Database (embedded im Backend)
 
+Ausnahme: Der Sichtbarkeits-Toggle ruft das Backend per Browser-fetch() direkt auf
+(Browser → cvportal-backend, ohne Umweg über das Frontend) – siehe Abschnitt 11.
 ```
 
 ---
@@ -41,7 +44,7 @@ H2 Database (embedded im Backend)
 - **M02** – Das Backend konfiguriert CORS explizit, sodass Anfragen vom Frontend (andere Origin) zugelassen werden.
 - **M03** – Benutzer können sich am System registrieren und anmelden. Die Authentifizierung erfolgt über JWT (JSON Web Token).
 - **M04** – Jeder Teilnehmer kann seinen Lebenslauf in strukturierter Form erfassen und bearbeiten (Stammdaten, Berufserfahrung, Ausbildung, Kenntnisse, Sprachen).
-- **M05** – Administratoren (Berater) können alle Lebensläufe aller Teilnehmer einsehen.
+- **M05** – Administratoren (Berater) können alle Lebensläufe aller Teilnehmer einsehen (erfüllt durch die einfache Tabellenübersicht F05; das erweiterte Admin-Dashboard mit Statistiken ist **nicht** erforderlich, siehe W04).
 - **M06** – Jeder Teilnehmer hat eine öffentlich zugängliche Web-Visitenkarte (`/card/{benutzername}`), die ohne Login abrufbar ist und wesentliche Profildaten sowie einen Link zum vollständigen Lebenslauf enthält.
 - **M07** – Der vollständige Lebenslauf ist über eine eigene öffentliche URL abrufbar (`/cv/{benutzername}`), sofern der Teilnehmer die Sichtbarkeit auf "öffentlich" gesetzt hat.
 - **M08** – Das Frontend stellt alle Funktionen über ein responsives Web-Interface bereit (Bootstrap 5).
@@ -53,7 +56,7 @@ H2 Database (embedded im Backend)
 - **W01** – QR-Code auf der Web-Visitenkarte, der auf die Visitenkarten-URL verweist (generiert via ZXing-Library).
 - **W02** – Lebenslauf als PDF exportieren (serverseitig via iText oder Flying Saucer).
 - **W03** – Teilnehmer können ihr Profil-Foto hochladen (als Base64 in der DB gespeichert).
-- **W04** – Admin-Dashboard mit Übersicht: Anzahl Teilnehmer, Anzahl vollständiger Lebensläufe, zuletzt aktualisierte Profile.
+- **W04** – Admin-Dashboard mit Übersicht: Anzahl Teilnehmer, Anzahl vollständiger Lebensläufe, zuletzt aktualisierte Profile. Baut auf F05 auf, ist aber **nicht** Voraussetzung für M05 – die einfache Teilnehmerliste (F05) reicht dafür aus.
 - **W05** – Mehrsprachigkeit der Lebenslaufinhalte (Deutsch / Englisch parallel erfassbar).
 
 ### 1.3 Abgrenzungskriterien
@@ -123,7 +126,7 @@ H2 Database (embedded im Backend)
 ## 4. Produktfunktionen
 
 ### F01 – Registrierung und Login
-Neue Teilnehmer können sich mit Benutzername, E-Mail und Passwort registrieren. Nach dem Login erhält das Frontend ein JWT, das bei jedem weiteren API-Aufruf im `Authorization: Bearer`-Header mitgesendet wird.
+Neue Teilnehmer können sich mit Benutzername, E-Mail und Passwort registrieren. Nach dem Login speichert der Frontend-Server das JWT in der eigenen `HttpSession` (nicht im Browser). Für serverseitige Aufrufe liest `ApiClientService` das JWT aus der Session und setzt den `Authorization: Bearer`-Header für RestTemplate. Nur auf der CV-Bearbeitungsseite wird das JWT zusätzlich in die Seite eingebettet, damit der Sichtbarkeits-Toggle es für seinen direkten Browser-`fetch()`-Aufruf nutzen kann (siehe Abschnitt 11, Kommunikationsmodell).
 
 ### F02 – Lebenslauf erfassen und bearbeiten (Teilnehmer)
 Der Teilnehmer füllt seinen Lebenslauf in mehreren Abschnitten aus:
@@ -132,10 +135,10 @@ Der Teilnehmer füllt seinen Lebenslauf in mehreren Abschnitten aus:
 - **Ausbildung:** Schule/Institution, Abschluss, Zeitraum (mehrere möglich)
 - **Kenntnisse:** Fähigkeiten mit Selbsteinschätzung (z.B. Java – Fortgeschritten)
 - **Sprachen:** Sprache + Niveau (z.B. Englisch – B2)
-- **Sichtbarkeit:** Öffentlich / Privat (steuert, ob `/cv/{benutzername}` zugänglich ist)
+- **Sichtbarkeit:** Öffentlich / Privat (steuert, ob `/cv/{benutzername}` zugänglich ist) – Umschalten erfolgt per direktem Browser-`fetch()` ans Backend (`PUT /api/cv/me/visibility`), nicht über RestTemplate (siehe Abschnitt 11, Kommunikationsmodell).
 
 ### F03 – Lebenslauf anzeigen (öffentliche Ansicht)
-Die URL `/cv/{benutzername}` liefert eine druckfreundliche Ansicht des Lebenslaufs, sofern dieser auf "öffentlich" gesetzt ist. Ohne Login abrufbar, kein JWT nötig (öffentlicher Endpunkt im Backend).
+Die Frontend-URL `/cv/{benutzername}` liefert eine druckfreundliche Ansicht des Lebenslaufs, sofern dieser auf "öffentlich" gesetzt ist (das Frontend ruft dazu intern den Backend-Endpunkt `/api/cv/public/{benutzername}` auf). Ohne Login abrufbar, kein JWT nötig (öffentlicher Endpunkt im Backend).
 
 ### F04 – Web-Visitenkarte (öffentliche Ansicht)
 Die URL `/card/{benutzername}` zeigt eine kompakte, visuell ansprechende Visitenkarte mit:
@@ -147,13 +150,13 @@ Die URL `/card/{benutzername}` zeigt eine kompakte, visuell ansprechende Visiten
 - "Vollständigen Lebenslauf anzeigen"-Button (nur wenn Lebenslauf öffentlich)
 
 ### F05 – Berater-Übersicht (Admin)
-Der Admin sieht alle registrierten Teilnehmer in einer Tabelle mit Name, Datum der letzten Aktualisierung und Vollständigkeitsgrad des Lebenslaufs. Direkter Link zur Profilseite jedes Teilnehmers.
+Der Admin sieht alle registrierten Teilnehmer in einer Tabelle mit Name, Datum der letzten Aktualisierung und Vollständigkeitsgrad des Lebenslaufs. Direkter Link zur Profilseite jedes Teilnehmers. Diese Tabellenübersicht allein erfüllt bereits M05; das optionale Statistik-Dashboard (W04) baut lediglich zusätzlich darauf auf und ist keine Voraussetzung für M05.
 
 ### F06 – Benutzerverwaltung (Admin)
 Der Admin kann Benutzer deaktivieren und Rollen ändern (Teilnehmer ↔ Admin).
 
 ### F07 – CORS-Demonstration (technisches Kernmerkmal)
-Das Backend konfiguriert CORS über `@CrossOrigin` auf Klassen-Ebene oder zentral via `WebMvcConfigurer`. Das Frontend sendet Requests von einer anderen Origin (Port 8081) und empfängt die korrekten CORS-Response-Header. Im Entwicklungsmodus wird dies durch die H2-Konsole und Browser-DevTools sichtbar gemacht.
+Das Backend konfiguriert CORS über `@CrossOrigin` auf Klassen-Ebene oder zentral via `WebMvcConfigurer`. Konkret sichtbar wird das beim Sichtbarkeits-Toggle (F02): Der Browser sendet dabei einen direkten `fetch()`-Aufruf von Origin `localhost:8081` an `localhost:8080` und empfängt die korrekten CORS-Response-Header. Im Browser-DevTools-Netzwerk-Tab ist dieser Preflight- und Antwort-Header-Austausch sichtbar (siehe Abschnitt 11, Kommunikationsmodell).
 
 ### F08 – QR-Code generieren (Wunschkriterium W01)
 Das Backend stellt einen Endpunkt `/api/card/{benutzername}/qr` bereit, der einen QR-Code als PNG-Bild liefert. Der QR-Code enkodiert die URL der Visitenkarte. Generierung via ZXing Core-Bibliothek.
@@ -262,7 +265,7 @@ Das Backend stellt einen Endpunkt `/api/card/{benutzername}/qr` bereit, der eine
 - Formularvalidierung: clientseitig (HTML5 required) + serverseitige Fehlermeldungen via Thymeleaf
 
 ### CORS-Fluss (sichtbar im Browser)
-Im Browser-Netzwerk-Tab ist bei jedem API-Aufruf der `OPTIONS`-Preflight-Request sowie der `Access-Control-Allow-Origin`-Antwortheader sichtbar – ein zentrales Lernziel des Projektes.
+Im Browser-Netzwerk-Tab ist beim Sichtbarkeits-Toggle (öffentlich/privat, siehe Abschnitt 11) der `OPTIONS`-Preflight-Request sowie der `Access-Control-Allow-Origin`-Antwortheader sichtbar – ein zentrales Lernziel des Projektes. Alle anderen Seiten laufen serverseitig über RestTemplate und erzeugen keinen sichtbaren Preflight.
 
 ---
 
@@ -378,6 +381,34 @@ Im Browser-Netzwerk-Tab ist bei jedem API-Aufruf der `OPTIONS`-Preflight-Request
 
 ## 11. Ergänzungen
 
+### Datenschutzkonzept – öffentliche Visitenkarte und Lebenslauf
+
+Da `/card/{benutzername}` und `/cv/{benutzername}` bewusst ohne Login abrufbar sind, muss klar geregelt sein, welche personenbezogenen Daten dort sichtbar werden und wer das kontrolliert:
+
+| Maßnahme | Umsetzung |
+|----------|----------|
+| Opt-in statt Opt-out | `publicVisible` ist standardmäßig `false` – der Teilnehmer muss aktiv freigeben |
+| Datenminimierung auf der Visitenkarte | `/card/{username}` zeigt nur Name, Berufsbezeichnung, Kurzprofil, Kontaktdaten und optional Foto – **kein** Geburtsdatum |
+| Vollständige Daten nur bei expliziter Freigabe | Vollständige Berufserfahrung/Ausbildung erscheinen nur unter `/cv/{username}`, nur wenn `publicVisible = true` |
+| Widerruf jederzeit möglich | Teilnehmer kann die Sichtbarkeit jederzeit über den Sichtbarkeits-Toggle wieder auf "privat" setzen |
+| Löschung bei Deaktivierung | Deaktiviert ein Admin einen Benutzer (F06), wird dessen Visitenkarte/CV nicht mehr ausgeliefert |
+| Kein Tracking auf öffentlichen Seiten | Es werden keine Zugriffsstatistiken zu Besuchern der Visitenkarte erhoben |
+| Hinweis für Teilnehmer | Beim Aktivieren der Sichtbarkeit erscheint ein Hinweistext, welche Daten dadurch öffentlich einsehbar werden |
+
+**Abgrenzung:** Eine vollständige DSGVO-Konformitätsprüfung (Auftragsverarbeitung, Löschfristen, Betroffenenrechte-Prozess) ist nicht Teil des Pflichtumfangs, da die Anwendung für den internen BBRZ-Betrieb konzipiert ist (siehe A04). Die obigen Maßnahmen stellen aber sicher, dass Teilnehmer die Kontrolle über ihre öffentlich sichtbaren Daten behalten.
+
+### Kommunikationsmodell Frontend ↔ Backend
+
+CVPortal nutzt zwei unterschiedliche Kommunikationswege, je nach Anwendungsfall:
+
+**Serverseitig (Standardfall):** Die meisten Seiten (Dashboard, Lebenslauf-Formulare, Admin-Übersicht) werden serverseitig gerendert. Der `PageController` im Frontend ruft über `ApiClientService` (RestTemplate) das Backend auf, füllt das Thymeleaf-Model und liefert fertiges HTML an den Browser. Dieser Aufruf ist Java-zu-Java und findet nicht im Browser statt – die Same-Origin-Policy greift hier nicht, **CORS spielt keine Rolle**.
+
+**Clientseitig (bewusste Ausnahme – Sichtbarkeits-Toggle):** Der Schalter "öffentlich/privat" auf der Lebenslauf-Bearbeitungsseite (F02) sendet die Änderung direkt per JavaScript `fetch()` vom Browser an `http://localhost:8080/api/cv/me/visibility` – ohne Umweg über den Frontend-Server. Da es ein authentifizierter PUT-Request mit `Authorization`-Header ist, löst der Browser vorher einen echten CORS-Preflight (`OPTIONS`) aus. Dieser eine Programmpunkt ist die Grundlage für die live demonstrierbare CORS-Prüfung im Browser-Netzwerk-Tab.
+
+**JWT-Speicherung:** Da RestTemplate serverseitig läuft, kann es nicht auf Browser-SessionStorage zugreifen. Das JWT wird deshalb nach dem Login in der `HttpSession` des Frontend-Servers gespeichert; `ApiClientService` liest es von dort für alle RestTemplate-Aufrufe. Nur die CV-Bearbeitungsseite bettet das JWT zusätzlich in die gerenderte Seite ein, damit der Sichtbarkeits-Toggle es für seinen direkten Browser-`fetch()`-Aufruf verwenden kann. Da das Frontend damit selbst eine cookiebasierte Session (`JSESSIONID`) führt, bleibt der reguläre Spring-Security-CSRF-Schutz für die Frontend-eigenen Formulare (Login, CV-Formulare) aktiv – das "CSRF nicht nötig"-Argument gilt nur für das Backend, das rein JWT-basiert und stateless ist.
+
+Die öffentlichen Endpunkte (`/api/card/**`, `/api/cv/public/**`) sind einfache, nicht-authentifizierte GET-Requests ohne Custom-Header und lösen daher **keinen** Preflight aus.
+
 ### CORS – Technische Hintergründe (Lernziel)
 
 **Was ist CORS?**
@@ -402,16 +433,19 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
-**Öffentliche Endpunkte** (`/api/card/**`, `/api/cv/public/**`) 
+**Öffentliche Endpunkte** (`/api/card/**`, `/api/cv/public/**`) sind von der Authentifizierung ausgenommen (`permitAll()` in der `SecurityFilterChain`).
 
 ### JWT-Authentifizierungsfluss
 
 ```
 1. POST /api/auth/login → Backend prüft Credentials → liefert JWT
-2. Frontend speichert JWT im SessionStorage
-3. Jeder folgende API-Call: Header "Authorization: Bearer <token>"
-4. Backend-Filter validiert Token bei jedem Request
-5. Nach 8h: Token abgelaufen → Frontend leitet auf Login-Seite um
+2. Frontend-Server speichert JWT in der eigenen HttpSession (serverseitig, nicht im Browser)
+3. Serverseitige Aufrufe (RestTemplate): ApiClientService liest JWT aus der HttpSession
+   und setzt Header "Authorization: Bearer <token>"
+4. Ausnahme Sichtbarkeits-Toggle: JWT wird beim Rendern der CV-Bearbeitungsseite zusätzlich
+   in die Seite eingebettet, damit der direkte Browser-fetch() es mitschicken kann
+5. Backend-Filter validiert Token bei jedem Request
+6. Nach 8h: Token abgelaufen → Frontend-Session ungültig → Weiterleitung auf Login-Seite
 ```
 
 ### Projektstruktur
