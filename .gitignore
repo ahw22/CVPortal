@@ -145,12 +145,8 @@ replay_pid*
 # Ignore Temp PDF Doc exports
 docs/*.pdf
 
-!/docs/05_Testprotokoll.md
-!/docs/06_Frontend_Designkonzept.md
-!/docs/06_Frontend_Mockup.html
-!/docs/STUDY_GUIDE.md
-!/docs/00_README.pdf
-!/docs/01_Anmeldung_betriebliches_Projekt.pdf
-!/docs/02_Pflichtenheft.pdf
-!/docs/03_Projektplan_Zeitschaetzung.pdf
-!/docs/04_Executive_Summary.pdf
+# Ignore generated/reference docs not meant for version control
+/docs/05_Testprotokoll.md
+/docs/06_Frontend_Designkonzept.md
+/docs/06_Frontend_Mockup.html
+/docs/STUDY_GUIDE.md
