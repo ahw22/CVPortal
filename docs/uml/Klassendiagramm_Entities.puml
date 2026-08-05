@@ -1,0 +1,115 @@
+@startuml Klassendiagramm_Entities
+' CVPortal - Datenmodell (Backend-Entities)
+' Quelle: 02_Pflichtenheft.md, Abschnitt 5 "Produktdaten"
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+'hide circle
+
+title CVPortal – Klassendiagramm Datenmodell (cvportal-backend)
+
+package "at.bbrz.cvportal.backend.entity" {
+
+  class User {
+    - id : Long
+    - username : String <<unique, not null>>
+    - email : String <<unique, not null>>
+    - password : String <<Argon2id, not null>>
+    - role : Role
+    - active : Boolean
+    - createdAt : LocalDateTime
+  }
+
+  class CurriculumVitae {
+    - id : Long
+    - jobTitle : String
+    - phone : String
+    - address : String
+    - birthDate : LocalDate
+    - summary : String
+    - profilePhotoBase64 : String <<nullable>>
+    - publicVisible : Boolean = false
+    - lastUpdated : LocalDateTime
+  }
+
+  class WorkExperience {
+    - id : Long
+    - company : String
+    - position : String
+    - startDate : LocalDate
+    - endDate : LocalDate <<nullable>>
+    - description : String
+    - sortOrder : Integer
+  }
+
+  class Education {
+    - id : Long
+    - institution : String
+    - degree : String
+    - fieldOfStudy : String
+    - startDate : LocalDate
+    - endDate : LocalDate <<nullable>>
+    - sortOrder : Integer
+  }
+
+  class Skill {
+    - id : Long
+    - name : String
+    - level : SkillLevel
+  }
+
+  class Language {
+    - id : Long
+    - language : String
+    - level : LanguageLevel
+  }
+
+  enum Role {
+    ADMIN
+    TEILNEHMER
+  }
+
+  enum SkillLevel {
+    ANFAENGER
+    GRUNDKENNTNISSE
+    FORTGESCHRITTEN
+    EXPERTE
+  }
+
+  enum LanguageLevel {
+    A1
+    A2
+    B1
+    B2
+    C1
+    C2
+    MUTTERSPRACHE
+  }
+}
+
+User "1" -- "0..1" CurriculumVitae : besitzt >
+CurriculumVitae "1" *-- "0..*" WorkExperience : berufserfahrung >
+CurriculumVitae "1" *-- "0..*" Education : ausbildung >
+CurriculumVitae "1" *-- "0..*" Skill : kenntnisse >
+CurriculumVitae "1" *-- "0..*" Language : sprachen >
+
+User ..> Role
+Skill ..> SkillLevel
+Language ..> LanguageLevel
+
+note right of CurriculumVitae
+  publicVisible steuert den Zugriff auf
+  /cv/{username} (Opt-in, Default false).
+  /card/{username} ist immer öffentlich,
+  zeigt aber kein Geburtsdatum
+  (Datenminimierung, Abschnitt 11).
+end note
+
+note bottom of User
+  Datenmengen-Schätzung:
+  User 200 · CV 200 · WorkExperience 600
+  Education 400 · Skill 1.000 · Language 400
+end note
+
+@enduml
