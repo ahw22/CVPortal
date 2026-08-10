@@ -12,7 +12,7 @@ title CVPortal – Klassendiagramm Datenmodell (cvportal-backend)
 package "at.bbrz.cvportal.backend.entity" {
 
   class User {
-    - id : Long
+    - id : UUID <<UUIDv7, PK>>
     - username : String <<unique, not null>>
     - email : String <<unique, not null>>
     - password : String <<Argon2id, not null>>

@@ -171,7 +171,7 @@ Das Backend stellt einen Endpunkt `/api/card/{benutzername}/qr` bereit, der eine
 ### Backend-Entitäten
 
 **User**
-- id (Long, PK)
+- id (UUID, PK – UUIDv7, nicht fortlaufend erratbar)
 - username (String, unique, not null)
 - email (String, unique, not null)
 - password (String, Argon2, not null)
