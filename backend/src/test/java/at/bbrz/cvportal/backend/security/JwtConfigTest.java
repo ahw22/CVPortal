@@ -66,7 +66,7 @@ class JwtConfigTest {
     }
 
     @Test
-    void expiredTokenIsRejected() throws InterruptedException {
+    void expiredTokenIsRejected() {
         Instant now = Instant.now();
         String token = tokenExpiringAt(now.minus(9, ChronoUnit.HOURS), now.minus(1, ChronoUnit.HOURS), "irrelevant");
 
