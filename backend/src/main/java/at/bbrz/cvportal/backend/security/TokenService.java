@@ -35,7 +35,7 @@ public class TokenService {
     }
 
     /**
-     * Stellt einen Token fuer den gegeben User aus.
+     * Stellt einen Token fuer den gegebenen User aus.
      * <p>
      * Der Payload enthaelt keine sensiblen daten und ist deswegen nicht verschluesselt.
      * @param user der authentifizierte User
