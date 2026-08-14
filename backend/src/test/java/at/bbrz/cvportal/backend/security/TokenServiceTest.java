@@ -9,6 +9,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 import javax.crypto.SecretKey;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,4 +64,37 @@ class TokenServiceTest {
         assertEquals("ADMIN", jwt.getClaimAsString(TokenService.CLAIM_ROLE));
     }
 
+    @Test
+    void tokenLifeTimeMatchesConfig() {
+        Jwt jwt = decoder.decode(tokenService.issue(newUser(Role.TEILNEHMER)).value());
+
+        long seconds = Duration.between(jwt.getIssuedAt(), jwt.getExpiresAt()).toSeconds();
+
+        assertEquals(EXPIRATION_HOURS * 60 * 60L, seconds);
+    }
+
+    @Test
+    void returnedExpiryMatchesTheTokenClaim() {
+        IssuedToken issued = tokenService.issue(newUser(Role.TEILNEHMER));
+
+        Jwt jwt = decoder.decode(issued.value());
+
+        // JWT speichert Zeitstempel nur auf Sekundengenauigkeit
+        assertEquals(issued.expiresAt().truncatedTo(ChronoUnit.SECONDS), jwt.getExpiresAt());
+    }
+
+    @Test
+    void unsavedUserIsRejected() {
+        User user = newUser(Role.TEILNEHMER);
+        user.setId(null);
+
+        assertThrows(NullPointerException.class, () -> tokenService.issue(user));
+    }
+
+    @Test
+    void freshTokenIsNotExpired() {
+        Jwt jwt = decoder.decode(tokenService.issue(newUser(Role.TEILNEHMER)).value());
+
+        assertTrue(jwt.getExpiresAt().isAfter(Instant.now()));
+    }
 }
