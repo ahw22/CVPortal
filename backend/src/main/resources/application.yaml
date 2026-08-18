@@ -5,6 +5,16 @@ spring:
   application:
     name: cvportal-backend
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Springboot baut draus einene JwtAuthenticationConverter.
+          # Der Claim "role" wird zur Authority "ROLE_ADMIN" bzw "ROLE_TEILNEHMER"
+          # damit hasRole(...) greift.
+          authorities-claim-name: role
+          authority-prefix: ROLE_
+
   datasource:
     url: jdbc:h2:file:./data/cvportal
     driver-class-name: org.h2.Driver

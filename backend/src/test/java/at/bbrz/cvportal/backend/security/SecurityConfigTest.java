@@ -1,0 +1,61 @@
+package at.bbrz.cvportal.backend.security;
+
+import at.bbrz.cvportal.backend.entities.Role;
+import at.bbrz.cvportal.backend.entities.User;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+
+import org.springframework.http.HttpHeaders;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:securitytest;DB_CLOSE_DELAY=-1",
+        "app.jwt.secret=test-secret-with-at-least-32-characters"
+})
+class SecurityConfigTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private TokenService tokenService;
+
+    private String bearer(Role role) {
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername("andreas");
+        user.setEmail("andreas@test.at");
+        user.setPassword("$argon2id$platzhalter");
+        user.setRole(role);
+        user.setActive(true);
+
+        return "Bearer " + tokenService.issue(user).value();
+    }
+
+    @Test
+    void protectedEndpointWithoutTokenIsUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/cv/me"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().exists(HttpHeaders.WWW_AUTHENTICATE));
+    }
+
+    @Test
+    void validTokenPassesAuthentication() throws Exception {
+        mockMvc.perform(get("/api/cv/me")
+                .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
+                .andExpect(status().isNotFound());
+    }
+}

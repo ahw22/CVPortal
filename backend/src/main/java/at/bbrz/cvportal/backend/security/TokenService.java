@@ -51,7 +51,7 @@ public class TokenService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .subject(user.getId().toString())
                 .claim(CLAIM_USERNAME, user.getUsername())
-                .claim(CLAIM_ROLE, user.getRole())
+                .claim(CLAIM_ROLE, user.getRole().name())
                 .issuedAt(issuedAt)
                 .expiresAt(expiresAt)
                 .build();
