@@ -53,7 +53,8 @@ public class JwtConfig {
     /**
      * Stellt den Decoder bereit, der eingehende Tokens verifiziert.
      * <p>
-     * Das Mac-Verfahren wird explizit festgelegt; der Decoder akzeptiert damit ausschliesslich {@code alg: HS256} und weist abweichende Header ab, bevor Signatur geprueft wird
+     * Das Mac-Verfahren wird explizit festgelegt; der Decoder akzeptiert damit ausschliesslich
+     * {@code alg: HS256} und weist abweichende Header ab, bevor Signatur geprueft wird
      *
      * @param jwtSecretKey der Signaturschluessel
      * @return der konfigurierte Decoder
@@ -63,8 +64,6 @@ public class JwtConfig {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(jwtSecretKey)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
-
-        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(new JwtTimestampValidator()));
         return decoder;
     }
 }
