@@ -8,6 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Der Encoder mit dem Passwoerter gehasht und geprueft werden.
+     * @return Argon2idEncoder mit Standardwerten
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
