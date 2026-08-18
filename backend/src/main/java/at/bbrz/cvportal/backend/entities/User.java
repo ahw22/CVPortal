@@ -36,10 +36,6 @@ public class User {
     @Column(nullable = false, length = 150)
     private String email;
 
-    public static String normalizeEmail(String email) {
-        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
-    }
-
     /** Argon2id-Hash, niemals das Klartextpasswort (M10). */
     @Column(nullable = false, length = 255)
     private String password;
@@ -62,6 +58,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,
             orphanRemoval = true, fetch = FetchType.LAZY)
     private CurriculumVitae curriculumVitae;
+
+    public static String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
 
     /**
      * Setzt den Erstellungszeitpunkt automatisch beim ersten Speichern und normalisiert E-Mail
