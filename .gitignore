@@ -152,3 +152,6 @@ docs/*.pdf
 /docs/STUDY_GUIDE.md
 
 data/
+
+# IntelliJ: Projektdefinition kommt aus pom.xml, .idea wird beim Import erzeugt.
+.idea/
