@@ -15,13 +15,13 @@ import java.util.List;
  * <p>
  * Wird ausschliesslich auf dem Login-Path vom {@code DaoAuthenticationProvider} verwendet.
  * Alle anderen Requests authentifizieren sich mit dem Bearer Token. Dort baut Spring die Authorities
- * aus dem {@code role} claim (konfiguriert im {@code application.yaml}.
+ * aus dem {@code role} claim konfiguriert im {@code application.yaml}.
  * <p>
- * Die gekapselte Entity ist nach dem Laden detatched. Es duerfen deshalb nur die skalaren Felder gelesen werden.
+ * Die gekapselte Entity ist nach dem Laden detached. Es duerfen deshalb nur die skalaren Felder gelesen werden.
  * z.B. {@code getCurriculumVitae()} wuerde eine {@code LazyInitializationException} werfen.
  */
 public class UserPrincipal implements UserDetails {
-    // Muss zum {@code authority-prefix} in appplication.yaml passen
+    // Muss zum {@code authority-prefix} in application.yaml passen
     private static final String ROLE_PREFIX = "ROLE_";
     @Getter
     private final User user;
@@ -54,6 +54,7 @@ public class UserPrincipal implements UserDetails {
     public String toString() {
         return "UserPrincipal{" +
                 "username='" + user.getUsername() + "'" +
-                "role='" + user.getRole().name() + "'";
+                "role='" + user.getRole().name() + "'" +
+                "}";
     }
 }

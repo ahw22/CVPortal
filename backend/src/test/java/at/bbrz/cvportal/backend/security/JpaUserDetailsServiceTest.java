@@ -3,6 +3,7 @@ package at.bbrz.cvportal.backend.security;
 import at.bbrz.cvportal.backend.entities.Role;
 import at.bbrz.cvportal.backend.entities.User;
 import at.bbrz.cvportal.backend.repositories.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -28,6 +29,9 @@ class JpaUserDetailsServiceTest {
     @Autowired
     private JpaUserDetailsService userDetailsService;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private User save(String username, Role role, boolean active) {
         User user = new User();
         user.setUsername(username);
@@ -35,7 +39,9 @@ class JpaUserDetailsServiceTest {
         user.setPassword("$argon2id$platzhalter");
         user.setRole(role);
         user.setActive(active);
-        return userRepository.save(user);
+        User saved = userRepository.saveAndFlush(user);
+        entityManager.clear();
+        return saved;
     }
 
     @Test
@@ -70,7 +76,14 @@ class JpaUserDetailsServiceTest {
     void unknownUsernameThrows() {
         save("andreas", Role.TEILNEHMER, true);
 
-        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("Andreas"));
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("niemand"));
+    }
+
+    @Test
+    void lookupIsCaseSensitive() {
+        save("andreas", Role.TEILNEHMER, true);
+
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("ANDREAS"));
     }
 
     @Test
@@ -80,6 +93,10 @@ class JpaUserDetailsServiceTest {
         assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername(""));
     }
 
+    /**
+     * Der Service filter deaktivierte User bewusst nicht. Er laedt sie und meldet sie uber isEnabled() als deaktiviert.
+     * Die Ablehnung macht der DaoAuthentificationProvider mit einer DisabledException.
+     */
     @Test
     void inactiveUserIsLoadedButReportedAsDisabled() {
         save("gesperrt", Role.TEILNEHMER, false);
@@ -90,7 +107,7 @@ class JpaUserDetailsServiceTest {
     }
 
     @Test
-    void credentialsArePassedThroughUNchanged() {
+    void credentialsArePassedThroughUnchanged() {
         save("andreas", Role.TEILNEHMER, true);
 
         UserDetails details = userDetailsService.loadUserByUsername("andreas");
