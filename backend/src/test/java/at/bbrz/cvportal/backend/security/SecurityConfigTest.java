@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.http.HttpHeaders;
+
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,9 +54,35 @@ class SecurityConfigTest {
     }
 
     @Test
+    void garbageTokenisUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/cv/me").header("Bearer not.a.valid.token"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void validTokenPassesAuthentication() throws Exception {
         mockMvc.perform(get("/api/cv/me")
-                .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
+                        .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void adminEndpointRejectsNonAdmin() throws Exception {
+        mockMvc.perform(get("/api/admin/participants")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void adminEndpointAcceptsAdmin() throws Exception {
+        mockMvc.perform(get("/api/admin/participants")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(Role.ADMIN)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void publicCardIsAccessibleWithoutToken() throws Exception {
+        mockMvc.perform(get("/api/card/muster"))
                 .andExpect(status().isNotFound());
     }
 }
