@@ -3,6 +3,9 @@ package at.bbrz.cvportal.backend.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -60,5 +63,25 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+    }
+
+    /**
+     * Authentifiziert username und passwort beim login.
+     * <p>
+     * Dieser Pfad wird ausschliesslich von {@code POST /api/auth/login} genutzt. Alle anderen Requests weisen sich
+     * per Bearer-Token aus beruehren diesen Manager nicht.
+     * <p>
+     * Der {@code DaoAuthentificationProvider} prueft zuerst {@code isEnabled()} und lehnt deaktivierte Konten
+     * mit einer {@code DisabledException} ab. Bei unbekanntem username berechnet er zusaetzlich einen Dummy-Hash
+     * damit "Benutzer existiert nicht" und "Passwort ist falsch" gleich lange dauern.
+     * @param userDetailsService    laedt den Benutzer aus der Datenbank
+     * @param passwordEncoder       prueft die Eingabe gegen den gespeicherten Argon2id-Hash
+     * @return den Manager fuer den Login path.
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(JpaUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(provider);
     }
 }
