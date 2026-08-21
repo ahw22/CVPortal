@@ -156,7 +156,11 @@ Der Admin sieht alle registrierten Teilnehmer in einer Tabelle mit Name, Datum d
 Der Admin kann Benutzer deaktivieren und Rollen ändern (Teilnehmer ↔ Admin).
 
 ### F07 – CORS-Demonstration (technisches Kernmerkmal)
-Das Backend konfiguriert CORS über `@CrossOrigin` auf Klassen-Ebene oder zentral via `WebMvcConfigurer`. Konkret sichtbar wird das beim Sichtbarkeits-Toggle (F02): Der Browser sendet dabei einen direkten `fetch()`-Aufruf von Origin `localhost:8081` an `localhost:8080` und empfängt die korrekten CORS-Response-Header. Im Browser-DevTools-Netzwerk-Tab ist dieser Preflight- und Antwort-Header-Austausch sichtbar (siehe Abschnitt 11, Kommunikationsmodell).
+Das Backend konfiguriert CORS zentral über eine `CorsConfigurationSource`-Bean. Die `SecurityFilterChain` bindet diese Bean per `.cors(Customizer.withDefaults())` ein. Die Varianten `@CrossOrigin` und `WebMvcConfigurer` greifen erst im MVC-Layer und sind hier nicht verwendbar. Der `OPTIONS`-Preflight trägt keinen `Authorization`-Header. Die Security-Filterkette weist ihn deshalb mit `401` ab, bevor er einen Controller erreicht.
+
+Die Bean gilt für alle `/api/**`-Pfade. Den Zugriff schränkt die Origin-Whitelist ein, nicht der Pfad. CORS ist kein serverseitiger Zugriffsschutz. Die erlaubte Origin steht in der Property `app.cors.allowed-origins`.
+
+Konkret sichtbar wird das beim Sichtbarkeits-Toggle (F02): Der Browser sendet dabei einen direkten `fetch()`-Aufruf von Origin `localhost:8081` an `localhost:8080` und empfängt die korrekten CORS-Response-Header. Im Browser-DevTools-Netzwerk-Tab ist dieser Preflight- und Antwort-Header-Austausch sichtbar (siehe Abschnitt 11, Kommunikationsmodell).
 
 ### F08 – QR-Code generieren (Wunschkriterium W01)
 Das Backend stellt einen Endpunkt `/api/card/{benutzername}/qr` bereit, der einen QR-Code als PNG-Bild liefert. Der QR-Code enkodiert die URL der Visitenkarte. Generierung via ZXing Core-Bibliothek.
@@ -417,21 +421,23 @@ CORS (Cross-Origin Resource Sharing) ist ein Sicherheitsmechanismus des Browsers
 **Umsetzung im Projekt:**
 
 ```java
-// cvportal-backend: CorsConfig.java
-@Configuration
-public class CorsConfig implements WebMvcConfigurer {
+// cvportal-backend: SecurityConfig.java
+@Bean
+public CorsConfigurationSource corsConfigurationSource(CorsProperties corsProperties) {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(corsProperties.allowedOrigins());
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(false);
+    configuration.setMaxAge(3600L);
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-            .allowedOrigins("http://localhost:8081")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(false)
-            .maxAge(3600);
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/api/**", configuration);
+    return source;
 }
 ```
+
+Die Bean muss `corsConfigurationSource` heißen. Nur unter diesem Namen findet `.cors(Customizer.withDefaults())` sie. Der `CorsFilter` läuft vor der Authentifizierung und beantwortet den Preflight selbst.
 
 **Öffentliche Endpunkte** (`/api/card/**`, `/api/cv/public/**`) sind von der Authentifizierung ausgenommen (`permitAll()` in der `SecurityFilterChain`).
 
