@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,5 +85,48 @@ class SecurityConfigTest {
     void publicCardIsAccessibleWithoutToken() throws Exception {
         mockMvc.perform(get("/api/card/muster"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void preflightFromAllowedOriginIsAnswered() throws Exception {
+        mockMvc.perform(options("/api/cv/me")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:8081")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:8081"))
+                .andExpect(header().exists(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS));
+    }
+
+    @Test
+    void preflightFromForeignOriginIsRejected() throws Exception {
+        mockMvc.perform(options("/api/cv/me")
+                        .header(HttpHeaders.ORIGIN, "http://ahwz.dev")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+    }
+
+    @Test
+    void actualRequestCarriesAllowOiriginHeader() throws Exception {
+        mockMvc.perform(get("/api/cv/me")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:8081")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:8081"));
+    }
+
+    @Test
+    void preflightOutsideApiPathHasNoCorsHeaders() throws Exception {
+        mockMvc.perform(options("/h2-console/login.do")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:8081")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+    }
+
+    @Test
+    void preflightWithDisallowedMethodIsRejected() throws Exception {
+        mockMvc.perform(options("/api/cv/me")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:8081")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
+                .andExpect(status().isForbidden());
     }
 }

@@ -1,5 +1,6 @@
 package at.bbrz.cvportal.backend.security;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,8 +13,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
+@EnableConfigurationProperties(CorsProperties.class)
 public class SecurityConfig {
 
     private static final String PATH_H2_CONSOLE = "/h2-console/**";
@@ -22,6 +29,7 @@ public class SecurityConfig {
     private static final String PATH_LOGIN = "/api/auth/login";
     private static final String PATH_PUBLIC_CARD = "/api/card/**";
     private static final String PATH_PUBLIC_CV = "/api/cv/public/**";
+    private static final String PATH_API = "/api/**";
 
 
     /**
@@ -83,5 +91,24 @@ public class SecurityConfig {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
+    }
+
+    /**
+     * Die Quelle die der CorsFilter fuer jeden Request auswertet.
+     * @param corsProperties die erlaubten Herkuenfte aus der application.yaml
+     * @return die Config fuer alle /api-pfade
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(CorsProperties corsProperties) {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(corsProperties.allowedOrigins());
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(false);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(PATH_API, configuration);
+        return source;
     }
 }
