@@ -93,6 +93,7 @@ class AuthControllerTest {
                                 "username":"",
                                 "email":"andreas@test.at",
                                 "password":"geheim12345"
+                                }
                                 """))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(authService);
@@ -107,6 +108,7 @@ class AuthControllerTest {
                                 "username":"andreas",
                                 "email":"keine-email",
                                 "password":"geheim12345"
+                                }
                                 """))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(authService);
@@ -121,6 +123,7 @@ class AuthControllerTest {
                                 "username":"andreas",
                                 "email":"andreas@test.at",
                                 "password":"kurz"
+                                }
                                 """))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(authService);
@@ -197,7 +200,8 @@ class AuthControllerTest {
                         .content("""
                                 {
                                 "username": "andreas",
-                                "password": "";
+                                "password": ""
+                                }
                                 """))
                 .andExpect(status().isBadRequest());
         verifyNoInteractions(authService);

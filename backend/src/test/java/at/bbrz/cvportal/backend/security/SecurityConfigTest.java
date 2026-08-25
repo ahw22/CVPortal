@@ -56,7 +56,7 @@ class SecurityConfigTest {
 
     @Test
     void garbageTokenisUnauthorized() throws Exception {
-        mockMvc.perform(get("/api/cv/me").header("Bearer not.a.valid.token"))
+        mockMvc.perform(get("/api/cv/me").header(HttpHeaders.AUTHORIZATION, "Bearer not.a.valid.token"))
                 .andExpect(status().isUnauthorized());
     }
 
