@@ -223,7 +223,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginIssuesTheTokenForTheAuthenticatedEntityNotForTheRequestedUsername() {
+    void loginTakesTheEntityFromTheAuthenticationAndNeverHitsTheRepository() {
         User user = existingUser(Role.TEILNEHMER);
         when(authenticationManager.authenticate(any())).thenReturn(authenticated(user));
         when(tokenService.issue(any(User.class))).thenReturn(new IssuedToken("t", Instant.now()));
@@ -233,6 +233,7 @@ class AuthServiceTest {
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(tokenService).issue(captor.capture());
         assertSame(user, captor.getValue());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
