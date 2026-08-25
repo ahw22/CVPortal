@@ -1,12 +1,17 @@
 package at.bbrz.cvportal.backend.services;
 
+import at.bbrz.cvportal.backend.dtos.AuthResponse;
+import at.bbrz.cvportal.backend.dtos.LoginRequest;
 import at.bbrz.cvportal.backend.dtos.RegisterRequest;
 import at.bbrz.cvportal.backend.dtos.UserResponse;
 import at.bbrz.cvportal.backend.entities.Role;
 import at.bbrz.cvportal.backend.entities.User;
+import at.bbrz.cvportal.backend.exceptions.InvalidCredentialsException;
 import at.bbrz.cvportal.backend.exceptions.UserAlreadyExistsException;
 import at.bbrz.cvportal.backend.repositories.UserRepository;
+import at.bbrz.cvportal.backend.security.IssuedToken;
 import at.bbrz.cvportal.backend.security.TokenService;
+import at.bbrz.cvportal.backend.security.UserPrincipal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,8 +20,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -178,5 +190,88 @@ class AuthServiceTest {
         assertEquals("E-Mail-Adresse ist bereits registriert", exception.getMessage());
         verify(userRepository, never()).save(any());
         verifyNoInteractions(passwordEncoder);
+    }
+
+    @Test
+    void loginPassesTheSubmittedCredentialsToTheManager() {
+        User user = existingUser(Role.TEILNEHMER);
+        when(authenticationManager.authenticate(any())).thenReturn(authenticated(user));
+        when(tokenService.issue(user)).thenReturn(new IssuedToken("header.payload.signature", Instant.now()));
+
+        authService.login(new LoginRequest("andreas", PLAIN_PASSWORD));
+
+        ArgumentCaptor<Authentication> captor = ArgumentCaptor.forClass(Authentication.class);
+        verify(authenticationManager).authenticate(captor.capture());
+        assertEquals("andreas", captor.getValue().getPrincipal());
+        assertEquals(PLAIN_PASSWORD, captor.getValue().getCredentials());
+        assertFalse(captor.getValue().isAuthenticated());
+    }
+
+    @Test
+    void loginReturnsTokenExpiryUsernameAndRole() {
+        Instant expiresAt = Instant.now().plus(8, ChronoUnit.HOURS);
+        User user = existingUser(Role.ADMIN);
+        when(authenticationManager.authenticate(any())).thenReturn(authenticated(user));
+        when(tokenService.issue(user)).thenReturn(new IssuedToken("header.payload.signature", expiresAt));
+
+        AuthResponse response = authService.login(new LoginRequest("andreas", PLAIN_PASSWORD));
+
+        assertEquals("header.payload.signature", response.token());
+        assertEquals(expiresAt, response.expiresAt());
+        assertEquals("andreas", response.username());
+        assertEquals(Role.ADMIN, response.role());
+    }
+
+    @Test
+    void loginIssuesTheTokenForTheAuthenticatedEntityNotForTheRequestedUsername() {
+        User user = existingUser(Role.TEILNEHMER);
+        when(authenticationManager.authenticate(any())).thenReturn(authenticated(user));
+        when(tokenService.issue(any(User.class))).thenReturn(new IssuedToken("t", Instant.now()));
+
+        authService.login(new LoginRequest("andreas", PLAIN_PASSWORD));
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(tokenService).issue(captor.capture());
+        assertSame(user, captor.getValue());
+    }
+
+    @Test
+    void wrongPasswordBecomesInvalidCredentialsAndIssuesNoToken() {
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad Credentials"));
+
+        assertThrows(InvalidCredentialsException.class, () -> {
+            authService.login(new LoginRequest("andreas", "falsch12345"));
+        });
+
+        verifyNoInteractions(tokenService);
+    }
+
+    @Test
+    void disabledAccountBecomesInvalidCredentialsAndLeaksNoDetail() {
+        when(authenticationManager.authenticate(any())).thenThrow(new DisabledException("User is disabled"));
+
+        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class,
+                () -> authService.login(new LoginRequest("gesperrt", PLAIN_PASSWORD)));
+
+        // Gleiche Meldung bie falschem Passwort
+        assertEquals("Benutzername oder Passwort falsch", exception.getMessage());
+        verifyNoInteractions(tokenService);
+    }
+
+    @Test
+    void unexpectedPrincipalTypeIsAConfigErrorNotAnInputError() {
+        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated("andreas", null, List.of());
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+
+        assertThrows(IllegalStateException.class,
+                () -> authService.login(new LoginRequest("andreas", PLAIN_PASSWORD)));
+
+        verifyNoInteractions(tokenService);
+    }
+
+    private Authentication authenticated(User user) {
+        UserPrincipal principal = new UserPrincipal(user);
+        return UsernamePasswordAuthenticationToken.authenticated(
+                principal, null, principal.getAuthorities());
     }
 }
