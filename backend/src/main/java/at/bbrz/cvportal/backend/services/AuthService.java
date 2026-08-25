@@ -90,7 +90,7 @@ public class AuthService {
                     .getName());
         }
 
-        User user = ((UserPrincipal) authentication.getPrincipal()).getUser();
+        User user = principal.getUser();
         IssuedToken token = tokenService.issue(user);
 
         return new AuthResponse(token.value(), token.expiresAt(), user.getUsername(), user.getRole());
