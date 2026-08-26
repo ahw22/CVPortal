@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -112,7 +110,7 @@ class CvControllerTest {
     }
 
     @Test
-    void tooLongFirstNameIsRejectedBEforeTheService() throws Exception {
+    void tooLongFirstNameIsRejectedBeforeTheService() throws Exception {
         String tooLong = "A".repeat(51);
 
         mockMvc.perform(put("/api/cv/me").with(token())

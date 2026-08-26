@@ -5,7 +5,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 
@@ -43,7 +42,7 @@ public class JwtConfig {
      * Stellt den Encoder bereit, der Claims yu einem signierten Token macht.
      *
      * @param jwtSecretKey der Signaturschluessel
-     * @return der konfigureierte Encodeer
+     * @return der konfigurierte Encoder
      */
     @Bean
     JwtEncoder jwtEncoder(SecretKey jwtSecretKey) {

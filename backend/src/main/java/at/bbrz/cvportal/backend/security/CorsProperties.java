@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 /**
- * Konfiguratin der CORS Einstellungen aus dem {@code app.cors} namespace
+ * Konfiguration der CORS Einstellungen aus dem {@code app.cors} namespace
  *
  * @param allowedOrigins Herkuenfte denen der Browser Zugriff erlaubt
  */

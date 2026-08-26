@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,10 +63,10 @@ class AuthServiceTest {
         return new RegisterRequest(username, email, PLAIN_PASSWORD);
     }
 
-    // Simuliert das Speichern in der DB da erst dann HIbernate ID vergibt
+    // Simuliert das Speichern in der DB da erst dann Hibernate ID vergibt
     private void stubSaveWithGeneratedId() {
-        when(userRepository.save(any(User.class))).thenAnswer(invoction -> {
-            User toSave = invoction.getArgument(0);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User toSave = invocation.getArgument(0);
             toSave.setId(SAVED_ID);
             return toSave;
         });

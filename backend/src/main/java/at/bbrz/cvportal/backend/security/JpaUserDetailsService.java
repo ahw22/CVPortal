@@ -28,7 +28,7 @@ public class JpaUserDetailsService implements UserDetailsService {
      * Sucht nach User anhand des username.
      * <p>
      * Die Suche ist Case-sensitiv passend zum Constraint {@code uk_user_username}.
-     * @param username der eingegbene username
+     * @param username der eingegebene username
      * @return die Anmeldedaten des Users
      * @throws UsernameNotFoundException wenn kein User mit dem Namen existiert.
      */

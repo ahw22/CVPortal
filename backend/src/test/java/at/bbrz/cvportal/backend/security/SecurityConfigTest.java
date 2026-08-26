@@ -13,8 +13,6 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -55,7 +53,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void garbageTokenisUnauthorized() throws Exception {
+    void garbageTokenIsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/cv/me").header(HttpHeaders.AUTHORIZATION, "Bearer not.a.valid.token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -107,7 +105,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void actualRequestCarriesAllowOiriginHeader() throws Exception {
+    void actualRequestCarriesAllowOriginHeader() throws Exception {
         mockMvc.perform(get("/api/cv/me")
                         .header(HttpHeaders.ORIGIN, "http://localhost:8081")
                         .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
