@@ -22,6 +22,7 @@ public class CvService {
     private static final int CRITERIA_COUNT = 10;
 
     private final CurriculumVitaeRepository repository;
+    private final CvMapper mapper;
 
     /**
      * Fetched den eigenen Lebenslauf
@@ -70,7 +71,7 @@ public class CvService {
     /**
      * Liefert einen freigegebenen Lebenslauf ohne Anmeldung.
      *
-     * @throws CvNotFoundException wenn es den Benutzer nicht gibt oder er deaktiviert wurde.
+     * @throws CvNotFoundException  wenn es den Benutzer nicht gibt oder er deaktiviert wurde.
      * @throws CvNotPublicException wenn der Lebenslauf auf privat gesetzt ist.
      */
     @Transactional(readOnly = true)
@@ -127,28 +128,16 @@ public class CvService {
         User user = cv.getUser();
 
         List<WorkExperienceResponse> work = cv.getWorkExperiences().stream()
-                .map(w -> new WorkExperienceResponse(w.getId(),
-                        w.getCompany(),
-                        w.getPosition(),
-                        w.getStartDate(),
-                        w.getEndDate(),
-                        w.getDescription(),
-                        w.getSortOrder()))
+                .map(mapper::toResponse)
                 .toList();
         List<EducationResponse> education = cv.getEducations().stream()
-                .map(e -> new EducationResponse(e.getId(),
-                        e.getInstitution(),
-                        e.getDegree(),
-                        e.getFieldOfStudy(),
-                        e.getStartDate(),
-                        e.getEndDate(),
-                        e.getSortOrder()))
+                .map(mapper::toResponse)
                 .toList();
         List<SkillResponse> skills = cv.getSkills().stream()
-                .map(s -> new SkillResponse(s.getId(), s.getName(), s.getLevel()))
+                .map(mapper::toResponse)
                 .toList();
         List<LanguageResponse> languages = cv.getLanguages().stream()
-                .map(l -> new LanguageResponse(l.getId(), l.getLanguage(), l.getLevel()))
+                .map(mapper::toResponse)
                 .toList();
 
         return new CvResponse(
