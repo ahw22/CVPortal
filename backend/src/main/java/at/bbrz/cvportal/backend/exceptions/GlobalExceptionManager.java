@@ -47,7 +47,14 @@ public class GlobalExceptionManager extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.FORBIDDEN, "Zugriff verweigert", "Für diese Aktion fehlt die Berechtigung");
     }
 
-    /** Bean Validation: 400 mit Feldliste damit das Frontend die Felder markieren kann */
+    @ExceptionHandler(EntryNotFoundException.class)
+    public ProblemDetail handleEntryNotFound(EntryNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "Eintrag nicht gefunden", e.getMessage());
+    }
+
+    /**
+     * Bean Validation: 400 mit Feldliste damit das Frontend die Felder markieren kann
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e,
@@ -65,11 +72,15 @@ public class GlobalExceptionManager extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    /** Default Handler. Alles unerwartete wird geloggt. Nach aussen geht eine neutrale Meldung */
+    /**
+     * Default Handler. Alles unerwartete wird geloggt. Nach aussen geht eine neutrale Meldung
+     */
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexcpected(Exception e) {
         log.error("Unerwarterter Fehler", e);
-        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Interner Fehler", "Es ist ein unerwarteter Fehler aufgetreten");
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Interner Fehler",
+                "Es ist ein unerwarteter Fehler aufgetreten");
     }
 
 
