@@ -12,5 +12,5 @@ public interface EducationRepository extends JpaRepository<Education, Long> {
 
     List<Education> findByCv_User_IdOrderBySortOrderAsc(UUID userId);
 
-    Optional<Education> findFirstByCv_User_IdOrderBySortOderDesc(UUID userId);
+    Optional<Education> findFirstByCv_User_IdOrderBySortOrderDesc(UUID userId);
 }

@@ -79,7 +79,7 @@ public class EducationService {
     }
 
     private int nextSortOrder(UUID userId) {
-        return repository.findFirstByCv_User_IdOrderBySortOderDesc(userId)
+        return repository.findFirstByCv_User_IdOrderBySortOrderDesc(userId)
                 .map(entry -> entry.getSortOrder() + 1)
                 .orElse(0);
     }
