@@ -55,7 +55,7 @@ public class WorkExperienceService {
         apply(request, entry);
         entry.getCv().setLastUpdated(LocalDateTime.now());
 
-        return mapper.toResponse(entry);
+        return mapper.toResponse(repository.save(entry));
     }
 
     @Transactional
