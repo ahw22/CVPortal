@@ -48,12 +48,12 @@ public class EducationService {
 
     @Transactional
     public EducationResponse update(UUID userId, Long entryId, EducationRequest request) {
-        Education entry = new Education();
+        Education entry = findOwnEntry(userId, entryId);
 
         apply(request, entry);
         entry.getCv().setLastUpdated(LocalDateTime.now());
 
-        return mapper.toResponse(entry);
+        return mapper.toResponse(repository.save(entry));
     }
 
     @Transactional
