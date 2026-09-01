@@ -1,9 +1,9 @@
-package at.bbrz.cvportal.backend.controller;
+package at.bbrz.cvportal.backend.services;
 
+import at.bbrz.cvportal.backend.controller.WorkExperienceController;
 import at.bbrz.cvportal.backend.dtos.WorkExperienceRequest;
 import at.bbrz.cvportal.backend.dtos.WorkExperienceResponse;
 import at.bbrz.cvportal.backend.exceptions.EntryNotFoundException;
-import at.bbrz.cvportal.backend.services.WorkExperienceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -99,7 +99,8 @@ class WorkExperienceControllerTest {
                                     "startDate":"2026-01-01"
                                 }
                                 """))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validierungsfehler"));
 
         verifyNoInteractions(service);
     }
