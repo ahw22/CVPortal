@@ -1,11 +1,11 @@
-package at.bbrz.cvportal.backend.controller;
+package at.bbrz.cvportal.backend.services;
 
+import at.bbrz.cvportal.backend.controller.CvController;
 import at.bbrz.cvportal.backend.dtos.*;
 import at.bbrz.cvportal.backend.entities.LanguageLevel;
 import at.bbrz.cvportal.backend.entities.SkillLevel;
 import at.bbrz.cvportal.backend.exceptions.CvNotFoundException;
 import at.bbrz.cvportal.backend.exceptions.CvNotPublicException;
-import at.bbrz.cvportal.backend.services.CvService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
