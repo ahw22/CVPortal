@@ -29,7 +29,7 @@ public class SecurityConfig {
     private static final String PATH_LOGIN = "/api/auth/login";
     private static final String PATH_PUBLIC_CARD = "/api/card/**";
     private static final String PATH_PUBLIC_CV = "/api/cv/public/**";
-    private static final String PATH_API = "/api/**";
+    private static final String PATH_API = "/api/cv/me/visibility";
 
 
     /**

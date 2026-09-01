@@ -45,6 +45,8 @@ class SecurityConfigTest {
         return "Bearer " + tokenService.issue(user).value();
     }
 
+    //ToDo: Rewrite Tests to work with proper CORS config
+
     @Test
     void protectedEndpointWithoutTokenIsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/cv/me"))
@@ -87,7 +89,7 @@ class SecurityConfigTest {
 
     @Test
     void preflightFromAllowedOriginIsAnswered() throws Exception {
-        mockMvc.perform(options("/api/cv/me")
+        mockMvc.perform(options("/api/cv/me/visibility")
                         .header(HttpHeaders.ORIGIN, "http://localhost:8081")
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
                 .andExpect(status().isOk())
@@ -97,7 +99,7 @@ class SecurityConfigTest {
 
     @Test
     void preflightFromForeignOriginIsRejected() throws Exception {
-        mockMvc.perform(options("/api/cv/me")
+        mockMvc.perform(options("/api/cv/me/visibility")
                         .header(HttpHeaders.ORIGIN, "http://ahwz.dev")
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
                 .andExpect(status().isForbidden())
@@ -106,7 +108,7 @@ class SecurityConfigTest {
 
     @Test
     void actualRequestCarriesAllowOriginHeader() throws Exception {
-        mockMvc.perform(get("/api/cv/me")
+        mockMvc.perform(get("/api/cv/me/visibility")
                         .header(HttpHeaders.ORIGIN, "http://localhost:8081")
                         .header(HttpHeaders.AUTHORIZATION, bearer(Role.TEILNEHMER)))
                 .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:8081"));
@@ -121,8 +123,16 @@ class SecurityConfigTest {
     }
 
     @Test
+    void test() throws Exception {
+        mockMvc.perform(options("/api/cv/me/visibility")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:8081")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PUT"))
+                .andExpect(header().exists(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+    }
+
+    @Test
     void preflightWithDisallowedMethodIsRejected() throws Exception {
-        mockMvc.perform(options("/api/cv/me")
+        mockMvc.perform(options("/api/cv/me/visibility")
                         .header(HttpHeaders.ORIGIN, "http://localhost:8081")
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
                 .andExpect(status().isForbidden());
