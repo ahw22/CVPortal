@@ -45,8 +45,6 @@ class SecurityConfigTest {
         return "Bearer " + tokenService.issue(user).value();
     }
 
-    //ToDo: Rewrite Tests to work with proper CORS config
-
     @Test
     void protectedEndpointWithoutTokenIsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/cv/me"))
