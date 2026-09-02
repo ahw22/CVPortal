@@ -79,9 +79,11 @@ public class CurriculumVitae {
     private List<Education> educations = new ArrayList<>();
 
     @OneToMany(mappedBy = "cv", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
     private List<Skill> skills = new ArrayList<>();
 
     @OneToMany(mappedBy = "cv", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
     private List<Language> languages = new ArrayList<>();
 
     /**

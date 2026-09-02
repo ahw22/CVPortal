@@ -31,4 +31,7 @@ public class Skill {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SkillLevel level;
+
+    @Column(nullable = false)
+    private int sortOrder;
 }

@@ -39,12 +39,14 @@ public class CvMapper {
     public SkillResponse toResponse(Skill entry) {
         return new SkillResponse(entry.getId(),
                 entry.getName(),
-                entry.getLevel());
+                entry.getLevel(),
+                entry.getSortOrder());
     }
 
     public LanguageResponse toResponse(Language entry) {
         return new LanguageResponse(entry.getId(),
                 entry.getLanguage(),
-                entry.getLevel());
+                entry.getLevel(),
+                entry.getSortOrder());
     }
 }

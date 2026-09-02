@@ -35,4 +35,7 @@ public class Language {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private LanguageLevel level;
+
+    @Column(nullable = false)
+    private int sortOrder;
 }

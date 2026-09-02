@@ -247,8 +247,8 @@ class CvControllerTest {
                         "Beschreibung",
                         0)),
                 List.of(),
-                List.of(new SkillResponse(2L, "Java", SkillLevel.FORTGESCHRITTEN)),
-                List.of(new LanguageResponse(3L, "Englisch", LanguageLevel.B2))
+                List.of(new SkillResponse(2L, "Java", SkillLevel.FORTGESCHRITTEN, 0)),
+                List.of(new LanguageResponse(3L, "Englisch", LanguageLevel.B2, 0))
         );
     }
 
