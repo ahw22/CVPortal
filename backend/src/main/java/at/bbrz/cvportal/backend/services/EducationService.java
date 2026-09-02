@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.util.StringUtils.hasText;
+
 @Service
 @RequiredArgsConstructor
 public class EducationService {
@@ -67,7 +69,7 @@ public class EducationService {
     private void apply(EducationRequest request, Education entry) {
         entry.setInstitution(request.institution().trim());
         entry.setDegree(request.degree().trim());
-        entry.setFieldOfStudy(request.fieldOfStudy().trim());
+        entry.setFieldOfStudy(hasText(request.fieldOfStudy()) ? request.fieldOfStudy().trim() : null);
         entry.setStartDate(request.startDate());
         entry.setEndDate(request.endDate());
         if (request.sortOrder() != null) entry.setSortOrder(request.sortOrder());
