@@ -20,7 +20,7 @@ public record EducationRequest(
         Integer sortOrder) {
 
     @AssertTrue(message = "Enddatum darf nicht vor dem Startdatum liegen")
-    public boolean isEndDateBeforeStartDate() {
+    public boolean isEndDateNotBeforeStartDate() {
         return endDate == null || startDate == null || !endDate.isBefore(startDate);
     }
 }
