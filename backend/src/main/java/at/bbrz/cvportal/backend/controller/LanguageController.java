@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/cv/me/language")
+@RequestMapping("/api/cv/me/languages")
 @RequiredArgsConstructor
 public class LanguageController {
 
