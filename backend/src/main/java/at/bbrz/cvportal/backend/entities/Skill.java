@@ -9,8 +9,7 @@ import lombok.Setter;
  * Fachliche Kenntnis mit Selbsteinschaetzung innerhalb eines {@link CurriculumVitae}.
  */
 @Entity
-@Table(name = "skill", uniqueConstraints =
-        @UniqueConstraint(name = "uk_skill_cv_name", columnNames = {"cv_id", "name"}))
+@Table(name = "skill")
 @Getter
 @Setter
 @NoArgsConstructor

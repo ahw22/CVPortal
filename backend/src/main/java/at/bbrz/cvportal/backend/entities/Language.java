@@ -9,8 +9,7 @@ import lombok.Setter;
  * Sprachkenntnis mit Niveau nach GER innerhalb eines {@link CurriculumVitae}.
  */
 @Entity
-@Table(name = "cv_language", uniqueConstraints =
-        @UniqueConstraint(name = "uk_language_cv_name", columnNames = {"cv_id", "language_name"}))
+@Table(name = "cv_language")
 @Getter
 @Setter
 @NoArgsConstructor
