@@ -3,11 +3,11 @@ package at.bbrz.cvportal.backend.dtos;
 import at.bbrz.cvportal.backend.entities.SkillLevel;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 public record SkillRequest(
         @NotBlank
-        @Length(max = 60)
+        @Size(max = 60)
         String name,
         @NotNull
         SkillLevel level,
