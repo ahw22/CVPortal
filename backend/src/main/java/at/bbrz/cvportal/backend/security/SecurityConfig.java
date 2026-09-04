@@ -34,7 +34,6 @@ public class SecurityConfig {
     private static final String PATH_SWAGGER_HTML = "/swagger-ui.html";
     private static final String PATH_API_DOCS = "/v3/api-docs/**";
 
-
     /**
      * Definiert die Filterkette fuer alle Requests.
      * @param http der von Spring bereitgestellte Builder
