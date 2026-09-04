@@ -1,13 +1,7 @@
 package at.bbrz.cvportal.backend.services;
 
-import at.bbrz.cvportal.backend.dtos.EducationResponse;
-import at.bbrz.cvportal.backend.dtos.LanguageResponse;
-import at.bbrz.cvportal.backend.dtos.SkillResponse;
-import at.bbrz.cvportal.backend.dtos.WorkExperienceResponse;
-import at.bbrz.cvportal.backend.entities.Education;
-import at.bbrz.cvportal.backend.entities.Language;
-import at.bbrz.cvportal.backend.entities.Skill;
-import at.bbrz.cvportal.backend.entities.WorkExperience;
+import at.bbrz.cvportal.backend.dtos.*;
+import at.bbrz.cvportal.backend.entities.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -48,5 +42,24 @@ public class CvMapper {
                 entry.getLanguage(),
                 entry.getLevel(),
                 entry.getSortOrder());
+    }
+
+    public ParticipantResponse toResponse(CurriculumVitae cv, int completeness) {
+        return new ParticipantResponse(
+                cv.getUser().getUsername(),
+                cv.getFirstName(),
+                cv.getLastName(),
+                cv.getJobTitle(),
+                cv.getLastUpdated(),
+                completeness,
+                cv.getUser().isActive());
+    }
+
+    public UserResponse toResponse(User user) {
+        return new UserResponse(
+                user.getId().toString(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole());
     }
 }

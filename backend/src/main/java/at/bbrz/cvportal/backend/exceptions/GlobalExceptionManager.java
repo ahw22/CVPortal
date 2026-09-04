@@ -1,5 +1,6 @@
 package at.bbrz.cvportal.backend.exceptions;
 
+import at.bbrz.cvportal.backend.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,6 +36,11 @@ public class GlobalExceptionManager extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ProblemDetail handleUserAlreadyExists(UserAlreadyExistsException e) {
         return problem(HttpStatus.CONFLICT, "Benutzer existiert bereits", e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, "Benutzer nicht gefunden", e.getMessage());
     }
 
     /**
