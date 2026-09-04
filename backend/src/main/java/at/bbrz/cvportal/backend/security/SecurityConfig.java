@@ -30,6 +30,9 @@ public class SecurityConfig {
     private static final String PATH_PUBLIC_CARD = "/api/card/**";
     private static final String PATH_PUBLIC_CV = "/api/cv/public/**";
     private static final String PATH_API = "/api/cv/me/visibility";
+    private static final String PATH_SWAGGER_UI = "/swagger-ui/**";
+    private static final String PATH_SWAGGER_HTML = "/swagger-ui.html";
+    private static final String PATH_API_DOCS = "/v3/api-docs/**";
 
 
     /**
@@ -55,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PATH_REGISTER, PATH_LOGIN).permitAll()
                         .requestMatchers(HttpMethod.GET, PATH_PUBLIC_CARD, PATH_PUBLIC_CV).permitAll()
                         .requestMatchers(PATH_H2_CONSOLE).permitAll()
+                        .requestMatchers(PATH_SWAGGER_UI, PATH_SWAGGER_HTML, PATH_API_DOCS).permitAll()
                         .requestMatchers(PATH_ADMIN).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

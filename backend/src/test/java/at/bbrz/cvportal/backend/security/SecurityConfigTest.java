@@ -76,13 +76,13 @@ class SecurityConfigTest {
     void adminEndpointAcceptsAdmin() throws Exception {
         mockMvc.perform(get("/api/admin/participants")
                         .header(HttpHeaders.AUTHORIZATION, bearer(Role.ADMIN)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test
     void publicCardIsAccessibleWithoutToken() throws Exception {
         mockMvc.perform(get("/api/card/muster"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

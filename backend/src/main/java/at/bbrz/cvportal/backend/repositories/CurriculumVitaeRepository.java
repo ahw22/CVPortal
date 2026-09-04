@@ -13,6 +13,6 @@ public interface CurriculumVitaeRepository extends JpaRepository<CurriculumVitae
     Optional<CurriculumVitae> findByUserUsername(String username);
     Optional<CurriculumVitae> findByUserId(UUID userId);
 
-    @EntityGraph(attributePaths = {"user", "workExperiences", "educations", "skills", "languages"})
+    @EntityGraph(attributePaths = "user")
     List<CurriculumVitae> findByUserRoleOrderByUserUsernameAsc(Role role);
 }
