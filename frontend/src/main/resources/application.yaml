@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: cvportal-frontend
+  thymeleaf:
+    cache: false
+
+app:
+  backend:
+    base-url: http://localhost:8080
