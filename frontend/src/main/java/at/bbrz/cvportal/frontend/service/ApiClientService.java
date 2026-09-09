@@ -2,7 +2,7 @@ package at.bbrz.cvportal.frontend.service;
 
 import at.bbrz.cvportal.frontend.dtos.AuthResponse;
 import at.bbrz.cvportal.frontend.dtos.LoginRequest;
-import at.bbrz.cvportal.frontend.dtos.RegisterRequest;
+import at.bbrz.cvportal.frontend.dtos.RegisterForm;
 import at.bbrz.cvportal.frontend.dtos.UserResponse;
 import at.bbrz.cvportal.frontend.exceptions.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ApiClientService {
 
-    private static final String MSG_UNREACHABLE = "Der Server ist zurzeit nicht erreichbar. Bitte versuche es später erneut.";
+    private static final String MSG_UNREACHABLE = "Der Server ist zurzeit nicht erreichbar. Bitte versuchen Sie es später erneut.";
 
     private final RestTemplate restTemplate;
 
@@ -33,38 +33,47 @@ public class ApiClientService {
                 () -> restTemplate.postForObject("/api/auth/login", request, AuthResponse.class));
     }
 
-    public UserResponse register(RegisterRequest request) {
+    public UserResponse register(RegisterForm form) {
         return call("POST /api/auth/register",
-                () -> restTemplate.postForObject("/api/auth/register", request, UserResponse.class));
+                () -> restTemplate.postForObject("/api/auth/register", form, UserResponse.class));
     }
 
     private <T> T call(String description, Supplier<T> call) {
         try {
             return call.get();
         } catch (HttpStatusCodeException e) {
-            log.debug("Backend replied {} auf {}", e.getStatusCode(), description);
-            throw new ApiException(e.getStatusCode(), description + " -> " + e.getStatusCode(), fieldErrors(e), e);
+            ProblemDetail problem = problem(e);
+            String detail = problem != null && problem.getDetail() != null
+                    ? problem.getDetail()
+                    : description + " -> " + e.getStatusCode();
+
+            log.debug("Backend antwortete {} auf {}: {}", e.getStatusCode(), description, detail);
+            throw new ApiException(e.getStatusCode(), detail, fieldErrors(problem), e);
         } catch (ResourceAccessException e) {
             log.error("Cannot reach Backend bei {}", description, e);
             throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, MSG_UNREACHABLE, Map.of(), e);
         }
     }
 
-    private Map<String, String> fieldErrors(HttpStatusCodeException e) {
-        try {
-            ProblemDetail problemDetail = e.getResponseBodyAs(ProblemDetail.class);
-            if (problemDetail == null || problemDetail.getProperties() == null) {
-                return Map.of();
-            }
-            if (!(problemDetail.getProperties().get("fieldErrors") instanceof Map<?,?> errors)) {
-                return Map.of();
-            }
-            Map<String, String> fields = new LinkedHashMap<>();
-            errors.forEach((field, alert) -> fields.put(String.valueOf(field), String.valueOf(alert)));
-            return Collections.unmodifiableMap(fields);
-        } catch (RuntimeException ex) {
-            log.warn("fieldErrors konnte nicht gelesen werden: {}", e.getResponseBodyAsString(), ex);
+    private Map<String, String> fieldErrors(ProblemDetail problem) {
+        if (problem == null || problem.getProperties() == null) {
             return Map.of();
+        }
+        if (!(problem.getProperties().get("fieldErrors") instanceof Map<?,?> errors)) {
+            return Map.of();
+        }
+        Map<String,String> fields = new LinkedHashMap<>();
+        errors.forEach((field,message) -> fields.put(String.valueOf(field), String.valueOf(message)));
+        return Collections.unmodifiableMap(fields);
+    }
+
+    /* Liest das ProblemDetail aus der Antwort. {@code null} wenn kein Body */
+    private ProblemDetail problem(HttpStatusCodeException e) {
+        try {
+            return e.getResponseBodyAs(ProblemDetail.class);
+        } catch (RuntimeException ex) {
+            log.warn("Antwort ist kein ProblemDetail: {}", e.getResponseBodyAsString(), ex);
+            return null;
         }
     }
 }
