@@ -1,14 +1,10 @@
 package at.bbrz.cvportal.frontend.service;
 
-import at.bbrz.cvportal.frontend.dtos.AuthResponse;
-import at.bbrz.cvportal.frontend.dtos.LoginRequest;
-import at.bbrz.cvportal.frontend.dtos.RegisterForm;
-import at.bbrz.cvportal.frontend.dtos.UserResponse;
+import at.bbrz.cvportal.frontend.dtos.*;
 import at.bbrz.cvportal.frontend.exceptions.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -16,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -38,6 +35,37 @@ public class ApiClientService {
                 () -> restTemplate.postForObject("/api/auth/register", form, UserResponse.class));
     }
 
+    public List<ParticipantResponse> findParticipants(String token) {
+        return call("GET /api/admin/participants",
+                () -> List.of(restTemplate.exchange("/api/admin/participants",
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers(token)),
+                        ParticipantResponse[].class).getBody()));
+    }
+
+    public List<UserResponse> findUsers(String token) {
+        return call("GET /api/admin/users",
+                () -> List.of(restTemplate.exchange("/api/admin/users",
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers(token)),
+                        UserResponse[].class).getBody()));
+    }
+
+    public void setActive(String userId, boolean active, String token) {
+        call("PUT /api/admin/users/" + userId + "/active",
+                () -> restTemplate.exchange("/api/admin/users/{id}/active", HttpMethod.PUT,
+                        new HttpEntity<>(Map.of("active", active), headers(token)),
+                        UserResponse.class, userId).getBody());
+    }
+
+    public void setRole(String userId, String role, String token) {
+        call("PUT /api/admin/users/" + userId + "/role",
+                () -> restTemplate.exchange("/api/admin/users/{id}/role", HttpMethod.PUT,
+                        new HttpEntity<>(Map.of("role", role), headers(token)),
+                        UserResponse.class, userId).getBody());
+    }
+
+
     private <T> T call(String description, Supplier<T> call) {
         try {
             return call.get();
@@ -59,11 +87,11 @@ public class ApiClientService {
         if (problem == null || problem.getProperties() == null) {
             return Map.of();
         }
-        if (!(problem.getProperties().get("fieldErrors") instanceof Map<?,?> errors)) {
+        if (!(problem.getProperties().get("fieldErrors") instanceof Map<?, ?> errors)) {
             return Map.of();
         }
-        Map<String,String> fields = new LinkedHashMap<>();
-        errors.forEach((field,message) -> fields.put(String.valueOf(field), String.valueOf(message)));
+        Map<String, String> fields = new LinkedHashMap<>();
+        errors.forEach((field, message) -> fields.put(String.valueOf(field), String.valueOf(message)));
         return Collections.unmodifiableMap(fields);
     }
 
@@ -75,5 +103,12 @@ public class ApiClientService {
             log.warn("Antwort ist kein ProblemDetail: {}", e.getResponseBodyAsString(), ex);
             return null;
         }
+    }
+
+    private HttpHeaders headers(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+        return headers;
     }
 }
