@@ -54,7 +54,8 @@ class AuthControllerTest {
                         "01a023c5-659b-7648-b092-f6582274f84e",
                         "andreas",
                         "andreas@test.at",
-                        Role.TEILNEHMER));
+                        Role.TEILNEHMER,
+                        true));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +73,8 @@ class AuthControllerTest {
                 .thenReturn(new UserResponse("1",
                         "andreas",
                         "andreas@test.at",
-                        Role.TEILNEHMER));
+                        Role.TEILNEHMER,
+                        true));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)

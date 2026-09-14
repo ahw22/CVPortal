@@ -62,7 +62,7 @@ public class AuthService {
         user.setCurriculumVitae(new CurriculumVitae());
 
         User saved = userRepository.save(user);
-        return new UserResponse(saved.getId().toString(), saved.getUsername(), saved.getEmail(), saved.getRole());
+        return new UserResponse(saved.getId().toString(), saved.getUsername(), saved.getEmail(), saved.getRole(), saved.isActive());
     }
 
     /**

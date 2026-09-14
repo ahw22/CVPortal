@@ -60,6 +60,7 @@ public class CvMapper {
                 user.getId().toString(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole());
+                user.getRole(),
+                user.isActive());
     }
 }
