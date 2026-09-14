@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org" data-bs-theme="deepocean">
+<head th:replace="~{fragments/layout :: head('Anmelden')}">
+</head>
+<body>
+
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+<main id="inhalt" class="auth-wrap">
+
+    <a class="wordmark mb-4" th:href="@{/login}"><span>CV</span>Portal</a>
+
+    <div class="auth-card">
+        <th:block th:if="${param.registered != null}">
+            <div th:replace="~{fragments/alerts :: alert('success', 'Ihr Konto wurde angelegt. Bitte melden Sie sich an.')}"></div>
+        </th:block>
+        <th:block th:if="${param.logout != null}">
+            <div th:replace="~{fragments/alerts :: alert('info', 'Sie wurden abgemeldet.')}"></div>
+        </th:block>
+        <th:block th:if="${param.error != null}">
+            <div th:replace="~{fragments/alerts :: alert('danger', 'Benutzername oder Passwort ist falsch.')}"></div>
+        </th:block>
+
+        <div class="card">
+            <div class="card-body">
+                <h1 class="h4 mb-4">Anmelden</h1>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Benutzername</label>
+                        <input class="form-control" type="text" id="username" name="username"
+                               required autofocus autocomplete="username">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" for="password">Passwort</label>
+                        <input class="form-control" type="password" id="password" name="password"
+                               required autocomplete="current-password">
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">Anmelden</button>
+                </form>
+
+                <p class="small text-center text-body-secondary mt-4 mb-0">
+                    Noch kein Konto? <a th:href="@{/register}">Jetzt registrieren</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
