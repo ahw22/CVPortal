@@ -49,11 +49,7 @@ public class AuthPageController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute(ATTR_FORM) RegisterForm form, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return VIEW_REGISTER;
-        }
-
+    public String register(@ModelAttribute(ATTR_FORM) RegisterForm form, BindingResult bindingResult) {
         try {
             UserResponse created = apiClientService.register(form);
             log.info("Neuer Benutzer registriert: {}", created.username());
