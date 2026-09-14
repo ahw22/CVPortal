@@ -2,6 +2,7 @@
     --c-bg-deep:    #090B10;
     --c-bg:         #0F111A;
     --c-surface:    #1A1C25;
+    --c-surface-alt:#1F2233;
     --c-border:     #2A2E42;
 
     --c-text:       #A6ACCD;
@@ -110,3 +111,20 @@
 }
 
 :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+
+.navbar {
+    background: var(--c-bg-deep);
+    border-bottom: 1px solid var(--c-border);
+    position: sticky; top: 0; z-index: 1020;
+    --bs-navbar-color:        var(--c-text-muted);
+    --bs-navbar-hover-color:  var(--c-text);
+    --bs-navbar-active-color: var(--c-accent);
+}
+
+.dropdown-menu {
+    --bs-dropdown-bg:                var(--c-surface);
+    --bs-dropdown-border-color:      var(--c-border);
+    --bs-dropdown-link-color:        var(--c-text);
+    --bs-dropdown-link-hover-bg:     var(--c-surface-alt);
+    --bs-dropdown-link-hover-color:  var(--c-text-strong);
+}

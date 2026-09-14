@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar(aktiv)" class="navbar navbar-expand-lg">
+    <div class="container">
+
+        <a class="navbar-brand wordmark" th:href="@{/dashboard}"><span>CV</span>Portal</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#nav" aria-controls="nav" aria-expanded="false"
+                aria-label="Navigation anzeigen">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${aktiv == 'dashboard'} ? 'active'"
+                       th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${aktiv == 'cv'} ? 'active'"
+                       th:href="@{/cv/edit}">Mein Lebenslauf</a>
+                </li>
+                <li class="nav-item" th:if="${currentUser != null}">
+                    <a class="nav-link" th:classappend="${aktiv == 'card'} ? 'active'"
+                       th:href="@{/card/{u}(u=${currentUser.username})}">Meine Visitenkarte</a>
+                </li>
+
+                <!-- Nur fuer Admins (F05, F06) -->
+                <li class="nav-item" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">
+                    <a class="nav-link" th:classappend="${aktiv == 'participants'} ? 'active'"
+                       th:href="@{/admin/participants}">Teilnehmer</a>
+                </li>
+                <li class="nav-item" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">
+                    <a class="nav-link" th:classappend="${aktiv == 'users'} ? 'active'"
+                       th:href="@{/admin/users}">Benutzerverwaltung</a>
+                </li>
+            </ul>
+
+            <div class="dropdown" th:if="${currentUser != null}">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        th:text="${currentUser.username}">Benutzer</button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <!-- Logout muss POST sein, sonst lehnt der CSRF-Schutz ab. -->
+                        <form th:action="@{/logout}" method="post">
+                            <button class="dropdown-item" type="submit">Abmelden</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>
