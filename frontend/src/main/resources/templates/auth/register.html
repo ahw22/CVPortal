@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrieren')}"></head>
+<body>
+
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+<main id="inhalt" class="auth-wrap">
+
+    <a class="wordmark mb-4" th:href="@{/login}"><span>CV</span>Portal</a>
+
+    <div class="auth-card">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="h4 mb-4">Konto anlegen</h1>
+
+                <form th:action="@{/register}" th:object="${registerForm}" method="post">
+
+                    <!-- Formularweite Meldungen: 409 vom Backend, Backend nicht erreichbar -->
+                    <div class="alert alert-danger mb-3" role="alert"
+                         th:if="${#fields.hasGlobalErrors()}">
+                        <p class="mb-0" th:each="fehler : ${#fields.globalErrors()}"
+                           th:text="${fehler}">Fehler</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Benutzername</label>
+                        <input class="form-control" type="text" id="username"
+                               th:field="*{username}"
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                               required autofocus autocomplete="username">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}">Fehler</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="email">E-Mail</label>
+                        <input class="form-control" type="email" id="email"
+                               th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                               placeholder="name@bbrz.at" required autocomplete="email">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">Fehler</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" for="password">Passwort</label>
+                        <input class="form-control" type="password" id="password" name="password"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                               required minlength="8" autocomplete="new-password">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}">Fehler</div>
+                        <div class="form-text text-body-secondary" th:unless="${#fields.hasErrors('password')}">
+                            Mindestens 8 Zeichen.
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">Konto anlegen</button>
+                </form>
+
+                <p class="small text-center text-body-secondary mt-4 mb-0">
+                    Bereits registriert? <a th:href="@{/login}">Zur Anmeldung</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
