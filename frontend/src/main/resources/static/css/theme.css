@@ -15,6 +15,8 @@
     --c-info:       #82AAFF;
     --c-success:    #C3E88D;
     --c-danger:     #FF5370;
+    --c-warning:    #FFCB6B;
+    --c-highlight:  #C792EA;
 
     --sp-2: .5rem;
     --sp-4: 1rem;
@@ -83,13 +85,11 @@
     --bs-btn-hover-color:  var(--c-text-strong);
 }
 
-/* Statusfarbe mit 10 % Deckkraft, linke Kante voll (Designkonzept 5.9). */
 .alert { --bs-alert-border-radius: var(--r-md); border: 0; border-left: 3px solid; }
 .alert-success { --bs-alert-color: var(--c-success); --bs-alert-bg: rgba(195,232,141,.10); border-left-color: var(--c-success); }
 .alert-info    { --bs-alert-color: var(--c-info);    --bs-alert-bg: rgba(130,170,255,.10); border-left-color: var(--c-info); }
 .alert-danger  { --bs-alert-color: var(--c-danger);  --bs-alert-bg: rgba(255, 83,112,.10); border-left-color: var(--c-danger); }
 
-/* --- Seitenspezifisch: zentriertes Auth-Layout (Designkonzept 6.1) --- */
 
 .auth-wrap {
     min-height: 100vh;
@@ -102,7 +102,6 @@
 .wordmark { font-size: 1.5rem; font-weight: 600; color: var(--c-text-strong); text-decoration: none; }
 .wordmark span { color: var(--c-accent); }
 
-/* Erstes fokussierbares Element jeder Seite (Designkonzept 8). */
 .skip-link { position: absolute; left: -9999px; }
 .skip-link:focus {
     left: var(--sp-4); top: var(--sp-4); z-index: 1000;
@@ -127,4 +126,46 @@
     --bs-dropdown-link-color:        var(--c-text);
     --bs-dropdown-link-hover-bg:     var(--c-surface-alt);
     --bs-dropdown-link-hover-color:  var(--c-text-strong);
+}
+
+.table {
+    --bs-table-bg:           transparent;
+    --bs-table-color:        var(--c-text);
+    --bs-table-border-color: var(--c-border);
+    --bs-table-hover-bg:     var(--c-surface);
+    --bs-table-hover-color:  var(--c-text-strong);
+}
+.table > thead th {
+    background: var(--c-surface-alt);
+    color: var(--c-text-muted);
+    text-transform: uppercase;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+
+.progress { --bs-progress-bg: var(--c-surface-alt); --bs-progress-height: .5rem; }
+.bar-danger  { background: var(--c-danger); }
+.bar-warning { background: var(--c-warning); }
+.bar-success { background: var(--c-success); }
+
+.pill {
+    display: inline-block;
+    padding: .15rem .6rem;
+    border-radius: var(--r-pill, 999px);
+    font-size: .75rem;
+    font-weight: 600;
+}
+.pill-success   { background: rgba(195,232,141,.12); color: var(--c-success); }
+.pill-info      { background: rgba(130,170,255,.12); color: var(--c-info); }
+.pill-highlight { background: rgba(199,146,234,.12); color: var(--c-highlight); }
+.pill-muted     { background: rgba(143,147,168,.12); color: var(--c-text-muted); }
+
+.btn-danger-outline {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--c-danger);
+    --bs-btn-color: var(--c-danger);
+    --bs-btn-hover-bg: rgba(255,83,112,.12);
+    --bs-btn-hover-color: var(--c-danger);
+    --bs-btn-hover-border-color: var(--c-danger);
 }

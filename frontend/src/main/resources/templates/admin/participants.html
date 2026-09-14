@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Teilnehmer')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar('participants')}"></nav>
+
+<main class="container py-4">
+    <h1 class="mb-4">Teilnehmer</h1>
+
+    <div class="table-responsive" th:if="${!participants.isEmpty()}">
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th>Teilnehmer</th>
+                <th>Vollständigkeit</th>
+                <th class="d-none d-md-table-cell">Zuletzt aktualisiert</th>
+                <th>Status</th>
+                <th>Aktion</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${participants}">
+                <td>
+                    <div th:text="|${p.firstName ?: ''} ${p.lastName ?: ''}|">Name</div>
+                    <div class="small text-body-secondary" th:text="${p.username}">benutzer</div>
+                </td>
+                <td style="min-width: 9rem">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1">
+                            <div class="progress-bar"
+                                 th:classappend="${p.completeness < 40} ? 'bar-danger'
+                                               : (${p.completeness < 80} ? 'bar-warning' : 'bar-success')"
+                                 th:style="'width:' + ${p.completeness} + '%'"></div>
+                        </div>
+                        <span class="small" th:text="${p.completeness} + ' %'">0 %</span>
+                    </div>
+                </td>
+                <td class="d-none d-md-table-cell small text-body-secondary"
+                    th:text="${p.lastUpdated != null ? p.lastUpdated.toLocalDate() : '–'}">–</td>
+                <td>
+                    <span class="pill" th:classappend="${p.active} ? 'pill-success' : 'pill-muted'"
+                          th:text="${p.active} ? 'aktiv' : 'deaktiviert'">aktiv</span>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-secondary"
+                       th:href="@{/cv/{u}(u=${p.username})}">Profil öffnen</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="text-body-secondary" th:if="${participants.isEmpty()}">
+        Keine Teilnehmer gefunden.
+    </p>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

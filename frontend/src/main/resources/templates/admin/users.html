@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Benutzerverwaltung')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar('users')}"></nav>
+
+<main class="container py-4">
+    <h1 class="mb-4">Benutzerverwaltung</h1>
+
+    <th:block th:if="${fehler != null}">
+        <div th:replace="~{fragments/alerts :: alert('danger', ${fehler})}"></div>
+    </th:block>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th>Benutzer</th>
+                <th class="d-none d-md-table-cell">E-Mail</th>
+                <th>Rolle</th>
+                <th>Status</th>
+                <th>Aktion</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.username}">benutzer</td>
+                <td class="d-none d-md-table-cell small text-body-secondary"
+                    th:text="${u.email}">mail</td>
+                <td>
+                    <span class="pill"
+                          th:classappend="${u.role == 'ADMIN'} ? 'pill-highlight' : 'pill-info'"
+                          th:text="${u.role}">ROLLE</span>
+                </td>
+                <td>
+                    <span class="pill" th:classappend="${u.active} ? 'pill-success' : 'pill-muted'"
+                          th:text="${u.active} ? 'aktiv' : 'deaktiviert'">aktiv</span>
+                </td>
+                <td>
+                    <span class="small text-body-secondary"
+                          th:if="${currentUser != null and u.username == currentUser.username}">
+                        eigenes Konto
+                    </span>
+
+                    <div class="d-flex gap-2"
+                         th:unless="${currentUser != null and u.username == currentUser.username}">
+
+                        <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post">
+                            <input type="hidden" name="role"
+                                   th:value="${u.role == 'ADMIN'} ? 'TEILNEHMER' : 'ADMIN'">
+                            <button class="btn btn-sm btn-secondary" type="submit"
+                                    th:text="${u.role == 'ADMIN'} ? 'Zu Teilnehmer' : 'Zu Admin'">
+                                Rolle ändern
+                            </button>
+                        </form>
+
+                        <form th:action="@{/admin/users/{id}/active(id=${u.id})}" method="post">
+                            <input type="hidden" name="active" th:value="${!u.active}">
+                            <button class="btn btn-sm" type="submit"
+                                    th:classappend="${u.active} ? 'btn-danger-outline' : 'btn-secondary'"
+                                    th:text="${u.active} ? 'Deaktivieren' : 'Aktivieren'">
+                                Deaktivieren
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
