@@ -65,6 +65,17 @@ public class ApiClientService {
                         UserResponse.class, userId).getBody());
     }
 
+    public CvResponse getOwnCv(String token) {
+        return call("GET /api/cv/me",
+                () -> restTemplate.exchange("/api/cv/me", HttpMethod.GET,
+                        new HttpEntity<>(headers(token)), CvResponse.class).getBody());
+    }
+
+    public CvResponse updateOwnCv(CvForm form, String token) {
+        return call("PUT /api/cv/me",
+                () -> restTemplate.exchange("/api/cv/me", HttpMethod.PUT,
+                        new HttpEntity<>(form, headers(token)), CvResponse.class).getBody());
+    }
 
     private <T> T call(String description, Supplier<T> call) {
         try {

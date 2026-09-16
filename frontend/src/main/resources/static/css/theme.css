@@ -169,3 +169,10 @@
     --bs-btn-hover-color: var(--c-danger);
     --bs-btn-hover-border-color: var(--c-danger);
 }
+
+.card-accent { --bs-card-border-color: var(--c-accent-soft); }
+
+.form-switch .form-check-input:checked {
+    background-color: var(--c-accent);
+    border-color: var(--c-accent);
+}
