@@ -14,15 +14,15 @@
 
         <div class="collapse navbar-collapse" id="nav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
+                <li class="nav-item" th:if="${currentUser.role != 'ADMIN'}">
                     <a class="nav-link" th:classappend="${aktiv == 'dashboard'} ? 'active'"
                        th:href="@{/dashboard}">Dashboard</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${currentUser != null and currentUser.role != 'ADMIN'}">
                     <a class="nav-link" th:classappend="${aktiv == 'cv'} ? 'active'"
                        th:href="@{/cv/edit}">Mein Lebenslauf</a>
                 </li>
-                <li class="nav-item" th:if="${currentUser != null}">
+                <li class="nav-item" th:if="${currentUser != null and currentUser.role != 'ADMIN'}">
                     <a class="nav-link" th:classappend="${aktiv == 'card'} ? 'active'"
                        th:href="@{/card/{u}(u=${currentUser.username})}">Meine Visitenkarte</a>
                 </li>
