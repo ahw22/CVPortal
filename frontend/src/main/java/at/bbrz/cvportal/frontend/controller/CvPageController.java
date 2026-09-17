@@ -30,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CvPageController {
 
     private static final String VIEW_EDIT = "cv/edit";
+    private static final String VIEW_DASHBOARD = "cv/dashboard";
     private static final String REDIRECT_EDIT = "redirect:/cv/edit";
 
     private static final String ATTR_FORM = "cvForm";
@@ -61,8 +62,8 @@ public class CvPageController {
         model.addAttribute(ATTR_FORM, CvForm.von(cv));
         model.addAttribute(ATTR_VISIBILITY_URL,
                 backendProperties.baseUrl() + "/api/cv/me/visibility");
-        // Das JWT verlaesst hier bewusst den Server: der Sichtbarkeits-Toggle ruft das
-        // Backend direkt aus dem Browser auf und braucht den Bearer-Header dafuer (F07).
+        // Das JWT verlässt hier bewusst den Server. Der Sichtbarkeits-Toggle ruft das
+        // Backend direkt aus dem Browser auf und braucht den Bearer-Header dafür (F07).
         model.addAttribute(ATTR_JWT, user.token());
         return VIEW_EDIT;
     }
@@ -79,5 +80,16 @@ public class CvPageController {
             flash.addFlashAttribute(ATTR_ERROR, e.getMessage());
         }
         return REDIRECT_EDIT;
+    }
+
+
+    /**
+     * Einstiegsseite nach dem Login. Nutzt denselben Aufruf wie die Bearbeitungsseite.
+     * {@code CvResponse} trägt Vollständigkeit und Sichtbarkeit bereits mit.
+     */
+    @GetMapping("/dashboard")
+    public String dashboard(@AuthenticationPrincipal ApiUser user, Model model) {
+        model.addAttribute(ATTR_CV, apiClientService.getOwnCv(user.token()));
+        return VIEW_DASHBOARD;
     }
 }
