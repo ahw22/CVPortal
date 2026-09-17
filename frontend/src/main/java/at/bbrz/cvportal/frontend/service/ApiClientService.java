@@ -77,6 +77,16 @@ public class ApiClientService {
                         new HttpEntity<>(form, headers(token)), CvResponse.class).getBody());
     }
 
+    public CardResponse getCard(String username) {
+        return call("GET /api/card/" + username,
+                () -> restTemplate.getForObject("/api/card/{u}", CardResponse.class, username));
+    }
+
+    public CvResponse getPublicCv(String username) {
+        return call("GET /api/cv/public/" + username,
+                () -> restTemplate.getForObject("/api/cv/public/{u}", CvResponse.class, username));
+    }
+
     private <T> T call(String description, Supplier<T> call) {
         try {
             return call.get();
