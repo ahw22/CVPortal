@@ -84,54 +84,199 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <div class="overline mb-3">Berufserfahrung</div>
+            <h2 class="h6 text-body-secondary mb-3">Berufserfahrung</h2>
+
             <p class="text-body-secondary small" th:if="${cv.workExperiences.isEmpty()}">
                 Noch keine Einträge.</p>
-            <div class="entry" th:each="e : ${cv.workExperiences}">
-                <div class="d-flex justify-content-between">
-                    <strong th:text="${e.position}">Position</strong>
-                    <span class="small text-body-secondary mono"
-                          th:text="${e.startDate} + ' – ' + (${e.endDate} ?: 'heute')">Zeitraum</span>
+
+            <div class="border-bottom py-2" th:each="e : ${cv.workExperiences}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong th:text="${e.position}">Position</strong>
+                        <div class="small" th:text="${e.company}">Firma</div>
+                        <p class="small text-body-secondary mb-0" th:text="${e.description}"></p>
+                    </div>
+                    <div class="text-end">
+                        <div class="small text-body-secondary"
+                             th:text="${e.startDate} + ' – ' + (${e.endDate} ?: 'heute')">Zeitraum</div>
+                        <form th:action="@{/cv/edit/work-experience/{id}/delete(id=${e.id})}"
+                              method="post" class="mt-1">
+                            <button class="btn btn-sm btn-danger-outline" type="submit">Löschen</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="small" th:text="${e.company}">Firma</div>
-                <p class="small text-body-secondary mb-0" th:text="${e.description}"></p>
             </div>
+
+            <details class="mt-3">
+                <summary style="cursor:pointer; color: var(--c-accent-soft)">Eintrag hinzufügen</summary>
+                <form th:action="@{/cv/edit/work-experience}" method="post" class="row g-2 mt-1">
+                    <div class="col-md-6">
+                        <label class="form-label" for="w-position">Position</label>
+                        <input class="form-control" id="w-position" name="position" required maxlength="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="w-company">Firma</label>
+                        <input class="form-control" id="w-company" name="company" required maxlength="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="w-start">Von</label>
+                        <input class="form-control" type="date" id="w-start" name="startDate" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="w-end">Bis <span class="text-body-secondary">(leer = heute)</span></label>
+                        <input class="form-control" type="date" id="w-end" name="endDate">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="w-desc">Beschreibung</label>
+                        <textarea class="form-control" id="w-desc" name="description" rows="3" maxlength="2000"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-secondary btn-sm" type="submit">Hinzufügen</button>
+                    </div>
+                </form>
+            </details>
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
-            <div class="overline mb-3">Ausbildung</div>
+            <h2 class="h6 text-body-secondary mb-3">Ausbildung</h2>
+
             <p class="text-body-secondary small" th:if="${cv.educations.isEmpty()}">
                 Noch keine Einträge.</p>
-            <div class="entry" th:each="a : ${cv.educations}">
-                <div class="d-flex justify-content-between">
-                    <strong th:text="${a.degree}">Abschluss</strong>
-                    <span class="small text-body-secondary mono"
-                          th:text="${a.startDate} + ' – ' + (${a.endDate} ?: 'heute')">Zeitraum</span>
+
+            <div class="border-bottom py-2" th:each="a : ${cv.educations}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong th:text="${a.degree}">Abschluss</strong>
+                        <div class="small" th:text="${a.institution}">Institution</div>
+                        <div class="small text-body-secondary" th:if="${a.fieldOfStudy != null}"
+                             th:text="${a.fieldOfStudy}">Fachrichtung</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="small text-body-secondary"
+                             th:text="${a.startDate} + ' – ' + (${a.endDate} ?: 'laufend')">Zeitraum</div>
+                        <form th:action="@{/cv/edit/education/{id}/delete(id=${a.id})}"
+                              method="post" class="mt-1">
+                            <button class="btn btn-sm btn-danger-outline" type="submit">Löschen</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="small" th:text="${a.institution} + ' · ' + ${a.fieldOfStudy}">Institution</div>
             </div>
+
+            <details class="mt-3">
+                <summary style="cursor:pointer; color: var(--c-accent-soft)">Eintrag hinzufügen</summary>
+                <form th:action="@{/cv/edit/education}" method="post" class="row g-2 mt-1">
+                    <div class="col-md-6">
+                        <label class="form-label" for="a-degree">Abschluss</label>
+                        <input class="form-control" id="a-degree" name="degree" required maxlength="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="a-institution">Institution</label>
+                        <input class="form-control" id="a-institution" name="institution" required maxlength="150">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="a-field">Fachrichtung
+                            <span class="text-body-secondary">(optional)</span></label>
+                        <input class="form-control" id="a-field" name="fieldOfStudy" maxlength="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="a-start">Von</label>
+                        <input class="form-control" type="date" id="a-start" name="startDate" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="a-end">Bis
+                            <span class="text-body-secondary">(leer = laufend)</span></label>
+                        <input class="form-control" type="date" id="a-end" name="endDate">
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-secondary btn-sm" type="submit">Hinzufügen</button>
+                    </div>
+                </form>
+            </details>
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
-            <div class="overline mb-3">Kenntnisse</div>
-            <p class="text-body-secondary small" th:if="${cv.skills.isEmpty()}">
-                Noch keine Einträge.</p>
-            <span class="pill pill-info me-2 mb-2" th:each="k : ${cv.skills}"
-                  th:text="${k.name} + ' · ' + ${k.level}">Kenntnis</span>
+            <h2 class="h6 text-body-secondary mb-3">Kenntnisse</h2>
+
+            <p class="text-body-secondary small" th:if="${cv.skills.isEmpty()}">Noch keine Einträge.</p>
+
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="d-inline-flex align-items-center gap-1" th:each="k : ${cv.skills}">
+                    <span class="pill pill-info" th:text="${k.name} + ' · ' + ${k.level}">Kenntnis</span>
+                    <form th:action="@{/cv/edit/skills/{id}/delete(id=${k.id})}" method="post">
+                        <button class="btn btn-sm btn-danger-outline py-0 px-2" type="submit"
+                                th:title="'Löschen: ' + ${k.name}">×</button>
+                    </form>
+                </span>
+            </div>
+
+            <details class="mt-3">
+                <summary style="cursor:pointer; color: var(--c-accent-soft)">Kenntnis hinzufügen</summary>
+                <form th:action="@{/cv/edit/skills}" method="post" class="row g-2 mt-1">
+                    <div class="col-md-7">
+                        <label class="form-label" for="s-name">Bezeichnung</label>
+                        <input class="form-control" id="s-name" name="name" required maxlength="60">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="s-level">Niveau</label>
+                        <select class="form-select" id="s-level" name="level" required>
+                            <option value="ANFAENGER">Anfänger</option>
+                            <option value="GRUNDKENNTNISSE">Grundkenntnisse</option>
+                            <option value="FORTGESCHRITTEN">Fortgeschritten</option>
+                            <option value="EXPERTE">Experte</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-secondary btn-sm" type="submit">Hinzufügen</button>
+                    </div>
+                </form>
+            </details>
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
-            <div class="overline mb-3">Sprachen</div>
-            <p class="text-body-secondary small" th:if="${cv.languages.isEmpty()}">
-                Noch keine Einträge.</p>
-            <span class="pill pill-info me-2 mb-2" th:each="s : ${cv.languages}"
-                  th:text="${s.language} + ' · ' + ${s.level}">Sprache</span>
+            <h2 class="h6 text-body-secondary mb-3">Sprachen</h2>
+
+            <p class="text-body-secondary small" th:if="${cv.languages.isEmpty()}">Noch keine Einträge.</p>
+
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="d-inline-flex align-items-center gap-1" th:each="s : ${cv.languages}">
+                    <span class="pill pill-info" th:text="${s.language} + ' · ' + ${s.level}">Sprache</span>
+                    <form th:action="@{/cv/edit/languages/{id}/delete(id=${s.id})}" method="post">
+                        <button class="btn btn-sm btn-danger-outline py-0 px-2" type="submit"
+                                th:title="'Löschen: ' + ${s.language}">×</button>
+                    </form>
+                </span>
+            </div>
+
+            <details class="mt-3">
+                <summary style="cursor:pointer; color: var(--c-accent-soft)">Sprache hinzufügen</summary>
+                <form th:action="@{/cv/edit/languages}" method="post" class="row g-2 mt-1">
+                    <div class="col-md-7">
+                        <label class="form-label" for="l-language">Sprache</label>
+                        <input class="form-control" id="l-language" name="language" required maxlength="60">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="l-level">Niveau</label>
+                        <select class="form-select" id="l-level" name="level" required>
+                            <option value="A1">A1</option>
+                            <option value="A2">A2</option>
+                            <option value="B1">B1</option>
+                            <option value="B2">B2</option>
+                            <option value="C1">C1</option>
+                            <option value="C2">C2</option>
+                            <option value="MUTTERSPRACHE">Muttersprache</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-secondary btn-sm" type="submit">Hinzufügen</button>
+                    </div>
+                </form>
+            </details>
         </div>
     </div>
 

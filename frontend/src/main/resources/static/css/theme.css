@@ -66,6 +66,11 @@
     color:          var(--c-text-faint);
 }
 
+.form-select {
+    background-color: var(--c-bg-deep);
+    color: var(--c-text);
+}
+
 .btn-primary {
     --bs-btn-bg:                var(--c-accent);
     --bs-btn-border-color:      var(--c-accent);
