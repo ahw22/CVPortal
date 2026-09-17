@@ -1,8 +1,7 @@
 package at.bbrz.cvportal.frontend.controller;
 
 import at.bbrz.cvportal.frontend.config.BackendProperties;
-import at.bbrz.cvportal.frontend.dtos.CvForm;
-import at.bbrz.cvportal.frontend.dtos.CvResponse;
+import at.bbrz.cvportal.frontend.dtos.*;
 import at.bbrz.cvportal.frontend.exceptions.ApiException;
 import at.bbrz.cvportal.frontend.security.ApiUser;
 import at.bbrz.cvportal.frontend.service.ApiClientService;
@@ -32,6 +31,13 @@ public class CvPageController {
     private static final String VIEW_EDIT = "cv/edit";
     private static final String VIEW_DASHBOARD = "cv/dashboard";
     private static final String REDIRECT_EDIT = "redirect:/cv/edit";
+    private static final String PATH_WORK = "/api/cv/me/work-experience";
+    private static final String PATH_SKILLS = "/api/cv/me/skills";
+    private static final String PATH_LANGUAGES = "/api/cv/me/languages";
+    private static final String PATH_EDUCATION = "/api/cv/me/education";
+
+    private static final String MSG_ADDED = "Eintrag hinzugefügt.";
+    private static final String MSG_DELETED = "Eintrag gelöscht.";
 
     private static final String ATTR_FORM = "cvForm";
     private static final String ATTR_CV = "cv";
@@ -42,6 +48,7 @@ public class CvPageController {
 
     private final ApiClientService apiClientService;
     private final BackendProperties backendProperties;
+
 
 
     /**
@@ -82,7 +89,6 @@ public class CvPageController {
         return REDIRECT_EDIT;
     }
 
-
     /**
      * Einstiegsseite nach dem Login. Nutzt denselben Aufruf wie die Bearbeitungsseite.
      * {@code CvResponse} trägt Vollständigkeit und Sichtbarkeit bereits mit.
@@ -91,5 +97,79 @@ public class CvPageController {
     public String dashboard(@AuthenticationPrincipal ApiUser user, Model model) {
         model.addAttribute(ATTR_CV, apiClientService.getOwnCv(user.token()));
         return VIEW_DASHBOARD;
+    }
+
+    @PostMapping("/cv/edit/work-experience")
+    public String addWork(@ModelAttribute WorkExperienceForm form,
+                          @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return add(PATH_WORK, form, user, flash);
+    }
+
+    @PostMapping("/cv/edit/work-experience/{id}/delete")
+    public String deleteWork(@PathVariable Long id,
+                             @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return remove(PATH_WORK, id, user, flash);
+    }
+
+    @PostMapping("/cv/edit/skills")
+    public String addSkill(@ModelAttribute SkillForm form,
+                           @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return add(PATH_SKILLS, form, user, flash);
+    }
+
+    @PostMapping("/cv/edit/skills/{id}/delete")
+    public String deleteSkill(@PathVariable Long id,
+                              @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return remove(PATH_SKILLS, id, user, flash);
+    }
+
+    @PostMapping("/cv/edit/languages")
+    public String addLanguage(@ModelAttribute LanguageForm form,
+                              @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return add(PATH_LANGUAGES, form, user, flash);
+    }
+
+    @PostMapping("/cv/edit/languages/{id}/delete")
+    public String deleteLanguage(@PathVariable Long id,
+                                 @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return remove(PATH_LANGUAGES, id, user, flash);
+    }
+
+    @PostMapping("/cv/edit/education")
+    public String addEducation(@ModelAttribute EducationForm form,
+                               @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return add(PATH_EDUCATION, form, user, flash);
+    }
+
+    @PostMapping("/cv/edit/education/{id}/delete")
+    public String deleteEducation(@PathVariable Long id,
+                                  @AuthenticationPrincipal ApiUser user, RedirectAttributes flash) {
+        return remove(PATH_EDUCATION, id, user, flash);
+    }
+
+    /**
+     * Geprüft wird im Backend. Schlaegt das fehl, landet die deutsche Meldung als
+     * Alert über dem Formular.
+     */
+    private String add(String path, Object form, ApiUser user, RedirectAttributes flash) {
+        try {
+            apiClientService.addEntry(path, form, user.token());
+            flash.addFlashAttribute(ATTR_SUCCESS, MSG_ADDED);
+        } catch (ApiException e) {
+            log.warn("Anlegen fehlgeschlagen ({}): {}", path, e.getMessage());
+            flash.addFlashAttribute(ATTR_ERROR, e.getMessage());
+        }
+        return REDIRECT_EDIT;
+    }
+
+    private String remove(String path, Long id, ApiUser user, RedirectAttributes flash) {
+        try {
+            apiClientService.deleteEntry(path, id, user.token());
+            flash.addFlashAttribute(ATTR_SUCCESS, MSG_DELETED);
+        } catch (ApiException e) {
+            log.warn("Loeschen fehlgeschlagen ({}/{}): {}", path, id, e.getMessage());
+            flash.addFlashAttribute(ATTR_ERROR, e.getMessage());
+        }
+        return REDIRECT_EDIT;
     }
 }
