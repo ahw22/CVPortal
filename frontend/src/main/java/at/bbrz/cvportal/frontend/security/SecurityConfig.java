@@ -17,7 +17,6 @@ public class SecurityConfig {
     private static final String PATH_PUBLIC_CV = "/cv/*";
     private static final String PATH_PUBLIC_CARD = "/card/*";
     private static final String PATH_ADMIN = "/admin/**";
-    private static final String PATH_ACCESS_DENIED = "/error/403";
     private static final String PATH_ERROR = "/error";
 
     private static final String ROLE_ADMIN = "ADMIN";
@@ -45,7 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PATH_LOGIN, PATH_REGISTER).permitAll()
 
                         // /cv/edit muss vor /cv/* stehen da sonst die wildcard zuerst gilt
-                        .requestMatchers(PATH_CV_EDIT).authenticated()
+                        .requestMatchers(PATH_DASHBOARD, PATH_CV_EDIT).hasRole("TEILNEHMER")
+                        .requestMatchers(HttpMethod.GET, PATH_PUBLIC_CV, PATH_PUBLIC_CARD).permitAll()
                         .requestMatchers(HttpMethod.GET, PATH_PUBLIC_CV, PATH_PUBLIC_CARD).permitAll()
 
                         .requestMatchers(PATH_ADMIN).hasRole(ROLE_ADMIN)
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage(PATH_LOGIN)
                         .loginProcessingUrl(PATH_LOGIN)
-                        .defaultSuccessUrl(PATH_DASHBOARD)
+                        .defaultSuccessUrl("/")
                         .failureUrl(PATH_LOGIN + "?error")
                         .permitAll()
                 )
@@ -75,7 +75,6 @@ public class SecurityConfig {
                         .invalidSessionUrl(PATH_LOGIN)
                 )
 
-                .exceptionHandling(ex -> ex.accessDeniedPage(PATH_ACCESS_DENIED))
                 .build();
     }
 }

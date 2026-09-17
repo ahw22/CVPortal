@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nicht gefunden')}"></head>
+<body>
+
+<main class="auth-wrap text-center">
+    <div class="auth-card">
+        <div class="h1 text-body-secondary">404</div>
+        <h1 class="h4 mt-2">Seite nicht gefunden</h1>
+        <p class="text-body-secondary mt-3">
+            Die aufgerufene Adresse existiert nicht.
+        </p>
+        <a class="btn btn-secondary mt-3" th:href="@{/}">Zur Startseite</a>
+    </div>
+</main>
+
+</body>
+</html>

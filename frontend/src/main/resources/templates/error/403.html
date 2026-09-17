@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Kein Zugriff')}"></head>
+<body>
+
+<main class="auth-wrap text-center">
+    <div class="auth-card">
+        <div class="h1 text-body-secondary">403</div>
+        <h1 class="h4 mt-2">Kein Zugriff</h1>
+        <p class="text-body-secondary mt-3">
+            Für diese Seite fehlt Ihrem Konto die Berechtigung.
+        </p>
+        <a class="btn btn-secondary mt-3" th:href="@{/dashboard}">Zum Dashboard</a>
+    </div>
+</main>
+
+</body>
+</html>
