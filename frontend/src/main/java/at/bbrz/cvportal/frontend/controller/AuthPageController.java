@@ -60,13 +60,6 @@ public class AuthPageController {
         }
     }
 
-    //TODO: For testing remove later
-
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "cv/dashboard";
-    }
-
     /**
      * Mapped die Meldungen des Backends auf das Formular.
      * <p>
