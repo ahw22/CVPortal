@@ -49,8 +49,6 @@ public class CvPageController {
     private final ApiClientService apiClientService;
     private final BackendProperties backendProperties;
 
-
-
     /**
      * Leere Eingabefelder kommen als "" an. Ohne das hier würde ein leeres Feld als leerer
      * String statt als {@code null} ans Backend gehen und in die Vollständigkeitsberechnung
@@ -59,6 +57,16 @@ public class CvPageController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    /**
+     * Einstiegsseite nach dem Login. Nutzt denselben Aufruf wie die Bearbeitungsseite.
+     * {@code CvResponse} trägt Vollständigkeit und Sichtbarkeit bereits mit.
+     */
+    @GetMapping("/dashboard")
+    public String dashboard(@AuthenticationPrincipal ApiUser user, Model model) {
+        model.addAttribute(ATTR_CV, apiClientService.getOwnCv(user.token()));
+        return VIEW_DASHBOARD;
     }
 
     @GetMapping("/cv/edit")
@@ -87,16 +95,6 @@ public class CvPageController {
             flash.addFlashAttribute(ATTR_ERROR, e.getMessage());
         }
         return REDIRECT_EDIT;
-    }
-
-    /**
-     * Einstiegsseite nach dem Login. Nutzt denselben Aufruf wie die Bearbeitungsseite.
-     * {@code CvResponse} trägt Vollständigkeit und Sichtbarkeit bereits mit.
-     */
-    @GetMapping("/dashboard")
-    public String dashboard(@AuthenticationPrincipal ApiUser user, Model model) {
-        model.addAttribute(ATTR_CV, apiClientService.getOwnCv(user.token()));
-        return VIEW_DASHBOARD;
     }
 
     @PostMapping("/cv/edit/work-experience")
