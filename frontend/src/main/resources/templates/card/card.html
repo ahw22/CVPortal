@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Visitenkarte')}"></head>
+<body>
+
+<main class="auth-wrap">
+    <div class="auth-card">
+        <div class="card">
+            <div class="card-band"></div>
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img class="rounded-circle" width="96" height="96"
+                         th:if="${card.profilePhotoBase64 != null}"
+                         th:src="'data:image/jpeg;base64,' + ${card.profilePhotoBase64}"
+                         th:alt="${card.firstName} + ' ' + ${card.lastName}">
+                    <div>
+                        <h1 class="h4 mb-0"
+                            th:text="|${card.firstName ?: ''} ${card.lastName ?: ''}|">Name</h1>
+                        <div style="color: var(--c-accent-soft)"
+                             th:text="${card.jobTitle}">Berufsbezeichnung</div>
+                    </div>
+                </div>
+
+                <p th:if="${card.summary != null}" th:text="${card.summary}">Kurzprofil</p>
+
+                <div class="small text-body-secondary">
+                    <span th:if="${card.email != null}" th:text="${card.email}"></span>
+                    <span th:if="${card.phone != null}" th:text="' · ' + ${card.phone}"></span>
+                </div>
+
+                <a class="btn btn-primary w-100 mt-4" th:if="${card.cvPublic}"
+                   th:href="@{/cv/{u}(u=${card.username})}">Vollständigen Lebenslauf ansehen</a>
+            </div>
+        </div>
+
+        <p class="small text-center text-body-secondary mt-3 mb-0">
+            <a th:href="@{/login}">Anmelden</a>
+        </p>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

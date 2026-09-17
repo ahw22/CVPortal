@@ -176,3 +176,21 @@
     background-color: var(--c-accent);
     border-color: var(--c-accent);
 }
+
+.card-band {
+    height: 6px;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    background: linear-gradient(90deg, var(--c-accent-soft), var(--c-highlight));
+}
+
+@media print {
+    :root {
+        --c-bg: #FFF; --c-bg-deep: #FFF; --c-surface: #FFF;
+        --c-border: #CCC;
+        --c-text: #222; --c-text-strong: #000; --c-text-muted: #555;
+        --c-accent-soft: #00695C;
+    }
+    .no-print, .navbar { display: none; }
+}
+
+a.card:hover { --bs-card-border-color: var(--c-accent-soft); }
