@@ -87,6 +87,18 @@ public class ApiClientService {
                 () -> restTemplate.getForObject("/api/cv/public/{u}", CvResponse.class, username));
     }
 
+    public void addEntry(String path, Object body, String token) {
+        call("POST " + path,
+                () -> restTemplate.exchange(path, HttpMethod.POST,
+                        new HttpEntity<>(body, headers(token)), Void.class).getBody());
+    }
+
+    public void deleteEntry(String path, Long id, String token) {
+        call("DELETE " + path + "/" + id,
+                () -> restTemplate.exchange(path + "/{id}", HttpMethod.DELETE,
+                        new HttpEntity<>(headers(token)), Void.class, id).getBody());
+    }
+
     private <T> T call(String description, Supplier<T> call) {
         try {
             return call.get();
