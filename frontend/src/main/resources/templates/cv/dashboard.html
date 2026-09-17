@@ -4,13 +4,79 @@
 <body>
 <nav th:replace="~{fragments/navbar :: navbar('dashboard')}"></nav>
 
-<main class="container py-5">
-    <h1>Dashboard</h1>
-    <p class="text-body-secondary">Platzhalter - wird in Phase 5 aufgebaut.</p>
+<main class="container py-4" style="max-width: 820px">
 
-    <form th:action="@{/logout}" method="post" class="mt-4">
-        <button class="btn btn-secondary" type="submit">Abmelden</button>
-    </form>
+    <h1 th:text="'Willkommen zurück, ' + (${cv.firstName} ?: ${cv.username})">Willkommen</h1>
+    <p class="text-body-secondary"
+       th:if="${cv.lastUpdated != null}"
+       th:text="'Zuletzt aktualisiert: ' + ${cv.lastUpdated.toLocalDate()}">Datum</p>
+
+    <!-- ===================== Statuskarte ===================== -->
+    <div class="card my-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h6 text-body-secondary mb-0">Vollständigkeit</h2>
+                <span class="pill" th:classappend="${cv.publicVisible} ? 'pill-success' : 'pill-muted'"
+                      th:text="${cv.publicVisible} ? 'öffentlich' : 'privat'">privat</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="progress flex-grow-1">
+                    <div class="progress-bar"
+                         th:classappend="${cv.completeness < 40} ? 'bar-danger'
+                                       : (${cv.completeness < 80} ? 'bar-warning' : 'bar-success')"
+                         th:style="'width:' + ${cv.completeness} + '%'"></div>
+                </div>
+                <span th:text="${cv.completeness} + ' %'">0 %</span>
+            </div>
+
+            <p class="small text-body-secondary mt-3 mb-0" th:if="${cv.completeness < 100}">
+                Ergänzen Sie fehlende Abschnitte, um Ihr Profil zu vervollständigen.
+            </p>
+
+            <a class="btn btn-primary mt-4" th:href="@{/cv/edit}">Lebenslauf bearbeiten</a>
+        </div>
+    </div>
+
+    <!-- ===================== Kacheln ===================== -->
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
+            <a class="card h-100 text-decoration-none"
+               th:href="@{/card/{u}(u=${cv.username})}">
+                <div class="card-body">
+                    <h2 class="h6 mb-1">Meine Visitenkarte</h2>
+                    <p class="small text-body-secondary mb-0">
+                        Immer öffentlich erreichbar. Zum Teilen bei Bewerbungen.
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <a class="card h-100 text-decoration-none"
+               th:if="${cv.publicVisible}"
+               th:href="@{/cv/{u}(u=${cv.username})}">
+                <div class="card-body">
+                    <h2 class="h6 mb-1">Öffentlicher Lebenslauf</h2>
+                    <p class="small text-body-secondary mb-0">
+                        So sehen Ihren Lebenslauf Besucher ohne Anmeldung.
+                    </p>
+                </div>
+            </a>
+
+            <div class="card h-100" th:unless="${cv.publicVisible}">
+                <div class="card-body">
+                    <h2 class="h6 mb-1 text-body-secondary">Öffentlicher Lebenslauf</h2>
+                    <p class="small text-body-secondary mb-0">
+                        Noch nicht freigegeben. Die Sichtbarkeit ändern Sie auf der
+                        Bearbeitungsseite.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
