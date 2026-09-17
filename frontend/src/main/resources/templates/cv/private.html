@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nicht öffentlich')}"></head>
+<body>
+
+<main class="auth-wrap text-center">
+    <div class="auth-card">
+        <h1 class="h4">Dieses Profil ist nicht öffentlich</h1>
+        <p class="text-body-secondary mt-3">
+            Der Lebenslauf von <span th:text="${username}">benutzer</span> wurde nicht
+            zur Veröffentlichung freigegeben.
+        </p>
+        <a class="btn btn-secondary mt-3" th:href="@{/card/{u}(u=${username})}">
+            Zur Visitenkarte
+        </a>
+    </div>
+</main>
+
+</body>
+</html>
