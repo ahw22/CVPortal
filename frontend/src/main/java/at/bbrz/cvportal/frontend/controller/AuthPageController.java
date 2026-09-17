@@ -3,11 +3,12 @@ package at.bbrz.cvportal.frontend.controller;
 import at.bbrz.cvportal.frontend.dtos.RegisterForm;
 import at.bbrz.cvportal.frontend.dtos.UserResponse;
 import at.bbrz.cvportal.frontend.exceptions.ApiException;
+import at.bbrz.cvportal.frontend.security.ApiUser;
 import at.bbrz.cvportal.frontend.service.ApiClientService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.NotReadablePropertyException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,12 +30,20 @@ public class AuthPageController {
     private static final String ATTR_FORM = "registerForm";
     private static final String ERROR_CODE_BACKEND = "backend";
 
+    private static final String ROLE_ADMIN = "ADMIN";
+
     private final ApiClientService apiClientService;
 
-    // Root hat keine eigene Seite. Eingeloggte user sollen aufs Dashboard.
+    /**
+     * Die Wurzel entscheidet, wo ein Benutzer landet: Teilnehmer auf ihrem Dashboard,
+     * Admins in der Teilnehmerübersicht. Manche Admins haben keinen eigenen Lebenslauf,
+     * der entsteht nur bei der Registrierung, das Dashboard würde für sie scheitern.
+     */
     @GetMapping("/")
-    public String index() {
-        return REDIRECT_DASHBOARD;
+    public String index(@AuthenticationPrincipal ApiUser user) {
+        return ROLE_ADMIN.equals(user.role())
+                ? "redirect:/admin/participants"
+                : REDIRECT_DASHBOARD;
     }
 
     @GetMapping("/login")
