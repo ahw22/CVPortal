@@ -145,12 +145,6 @@ replay_pid*
 # Ignore Temp PDF Doc exports
 docs/*.pdf
 
-# Ignore generated/reference docs not meant for version control
-/docs/05_Testprotokoll.md
-/docs/06_Frontend_Designkonzept.md
-/docs/06_Frontend_Mockup.html
-/docs/STUDY_GUIDE.md
-
 data/
 
 # IntelliJ: Projektdefinition kommt aus pom.xml, .idea wird beim Import erzeugt.
