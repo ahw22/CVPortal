@@ -2,9 +2,12 @@
 <html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Benutzerverwaltung')}"></head>
 <body>
-<nav th:replace="~{fragments/navbar :: navbar('users')}"></nav>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<main class="container py-4">
+<div class="app-layout">
+    <nav th:replace="~{fragments/sidebar :: sidebar('users')}"></nav>
+
+    <main class="app-content">
     <h1 class="mb-4">Benutzerverwaltung</h1>
 
     <th:block th:if="${fehler != null}">
@@ -68,7 +71,8 @@
             </tbody>
         </table>
     </div>
-</main>
+    </main>
+</div>
 
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>

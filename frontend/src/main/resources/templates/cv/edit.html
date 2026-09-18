@@ -2,9 +2,13 @@
 <html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Mein Lebenslauf')}"></head>
 <body>
-<nav th:replace="~{fragments/navbar :: navbar('cv')}"></nav>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<main class="container py-4" style="max-width: 820px">
+<div class="app-layout">
+    <nav th:replace="~{fragments/sidebar :: sidebar('cv')}"></nav>
+
+    <main class="app-content">
+        <div class="inhalt">
 
     <h1 class="mb-4">Mein Lebenslauf</h1>
 
@@ -280,7 +284,9 @@
         </div>
     </div>
 
-</main>
+        </div>
+    </main>
+</div>
 
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script th:src="@{/js/visibility-toggle.js}"></script>

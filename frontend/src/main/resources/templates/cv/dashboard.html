@@ -2,9 +2,13 @@
 <html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
 <body>
-<nav th:replace="~{fragments/navbar :: navbar('dashboard')}"></nav>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<main class="container py-4" style="max-width: 820px">
+<div class="app-layout">
+    <nav th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></nav>
+
+    <main class="app-content">
+        <div class="inhalt">
 
     <h1 th:text="'Willkommen zurück, ' + (${cv.firstName} ?: ${cv.username})">Willkommen</h1>
     <p class="text-body-secondary"
@@ -77,7 +81,9 @@
         </div>
     </div>
 
-</main>
+        </div>
+    </main>
+</div>
 
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>

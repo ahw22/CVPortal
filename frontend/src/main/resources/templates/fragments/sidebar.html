@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Ab lg feste Spalte, darunter Offcanvas (Bootstrap 5.3 "responsive offcanvas"). -->
+<nav th:fragment="sidebar(aktiv)" id="sidebar" tabindex="-1"
+     class="offcanvas-lg offcanvas-start app-side" aria-labelledby="sidebar-titel">
+
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title h6 mb-0" id="sidebar-titel">Navigation</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                data-bs-target="#sidebar" aria-label="Navigation schließen"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+
+        <th:block th:if="${currentUser != null and currentUser.role != 'ADMIN'}">
+            <p class="side-grp">Mein Bereich</p>
+
+            <a class="side-link" th:href="@{/dashboard}"
+               th:classappend="${aktiv == 'dashboard'} ? 'active'"
+               th:attr="aria-current=${aktiv == 'dashboard'} ? 'page' : null">
+                <span class="side-ico" aria-hidden="true">◱</span> Dashboard
+            </a>
+
+            <a class="side-link" th:href="@{/cv/edit}"
+               th:classappend="${aktiv == 'cv'} ? 'active'"
+               th:attr="aria-current=${aktiv == 'cv'} ? 'page' : null">
+                <span class="side-ico" aria-hidden="true">▤</span> Mein Lebenslauf
+            </a>
+
+            <a class="side-link" th:href="@{/card/{u}(u=${currentUser.username})}"
+               th:classappend="${aktiv == 'card'} ? 'active'"
+               th:attr="aria-current=${aktiv == 'card'} ? 'page' : null">
+                <span class="side-ico" aria-hidden="true">▢</span> Meine Visitenkarte
+            </a>
+        </th:block>
+
+        <!-- Nur fuer Admins (F05, F06) -->
+        <th:block th:if="${currentUser != null and currentUser.role == 'ADMIN'}">
+            <p class="side-grp">Verwaltung</p>
+
+            <a class="side-link" th:href="@{/admin/participants}"
+               th:classappend="${aktiv == 'participants'} ? 'active'"
+               th:attr="aria-current=${aktiv == 'participants'} ? 'page' : null">
+                <span class="side-ico" aria-hidden="true">☷</span> Teilnehmer
+            </a>
+
+            <a class="side-link" th:href="@{/admin/users}"
+               th:classappend="${aktiv == 'users'} ? 'active'"
+               th:attr="aria-current=${aktiv == 'users'} ? 'page' : null">
+                <span class="side-ico" aria-hidden="true">⚙</span> Benutzerverwaltung
+            </a>
+        </th:block>
+
+    </div>
+</nav>
+
+</body>
+</html>

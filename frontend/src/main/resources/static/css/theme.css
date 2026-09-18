@@ -24,7 +24,9 @@
     --r-md: 8px;
     --r-lg: 14px;
 
-    -font-sans: system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
+    --h-nav: 57px;
+
+    --font-sans: system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
 }
 
 [data-bs-theme="deepocean"] {
@@ -39,6 +41,11 @@
     --bs-link-hover-color:          var(--c-accent);
     --bs-form-invalid-color:        var(--c-danger);
     --bs-form-invalid-border-color: var(--c-danger);
+    --bs-btn-close-filter:          invert(1) grayscale(100%) brightness(200%);
+    --bs-offcanvas-bg:              var(--c-bg-deep);
+    --bs-offcanvas-color:           var(--c-text);
+    --bs-offcanvas-border-color:    var(--c-border);
+    --bs-offcanvas-width:           260px;
     color-scheme: dark;
 }
 
@@ -123,6 +130,11 @@
     --bs-navbar-color:        var(--c-text-muted);
     --bs-navbar-hover-color:  var(--c-text);
     --bs-navbar-active-color: var(--c-accent);
+    /* Bootstrap liefert das helle Burger-Icon nur unter [data-bs-theme=dark];
+       unser Theme heisst deepocean, also hier selbst setzen. */
+    --bs-navbar-toggler-border-color: var(--c-border);
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23A6ACCD' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    min-height: var(--h-nav);
 }
 
 .dropdown-menu {
@@ -195,7 +207,70 @@
         --c-text: #222; --c-text-strong: #000; --c-text-muted: #555;
         --c-accent-soft: #00695C;
     }
-    .no-print, .navbar { display: none; }
+    .no-print, .navbar, .app-side { display: none; }
+    .app-layout { display: block; }
+    .app-content { padding: 0; }
+}
+
+.app-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    align-items: start;
+    min-height: calc(100vh - var(--h-nav));
+}
+@media (max-width: 991.98px) {
+    .app-layout { grid-template-columns: 1fr; }
+}
+
+.app-side {
+    background: var(--c-bg-deep);
+    border-right: 1px solid var(--c-border);
+    padding-top: var(--sp-4);
+}
+
+@media (min-width: 992px) {
+    .app-side {
+        position: sticky; top: var(--h-nav);
+        height: calc(100vh - var(--h-nav));
+        overflow-y: auto;
+        background-color: var(--c-bg-deep) !important;
+    }
+    .app-side .offcanvas-body { display: block; }
+}
+
+.side-grp {
+    margin: var(--sp-4) 0 var(--sp-2);
+    padding: 0 var(--sp-5);
+    font-size: .7rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--c-text-faint);
+}
+
+.side-link {
+    display: flex; align-items: center; gap: var(--sp-2);
+    padding: .55rem var(--sp-5);
+    color: var(--c-text-muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: background-color .15s ease, color .15s ease;
+}
+.side-link:hover { background: var(--c-surface); color: var(--c-text); }
+.side-link.active {
+    background: var(--c-surface-alt);
+    color: var(--c-accent);
+    border-left-color: var(--c-accent);
+}
+.side-ico { width: 1.25rem; text-align: center; }
+
+.app-content { padding: var(--sp-5); min-width: 0; }
+.app-content > .inhalt { max-width: 820px; }
+
+.avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--c-surface-alt); color: var(--c-accent-soft);
+    font-size: .75rem; font-weight: 600;
 }
 
 a.card:hover { --bs-card-border-color: var(--c-accent-soft); }

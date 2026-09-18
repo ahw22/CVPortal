@@ -2,9 +2,12 @@
 <html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Teilnehmer')}"></head>
 <body>
-<nav th:replace="~{fragments/navbar :: navbar('participants')}"></nav>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<main class="container py-4">
+<div class="app-layout">
+    <nav th:replace="~{fragments/sidebar :: sidebar('participants')}"></nav>
+
+    <main class="app-content">
     <h1 class="mb-4">Teilnehmer</h1>
 
     <div class="table-responsive" th:if="${!participants.isEmpty()}">
@@ -53,7 +56,8 @@
     <p class="text-body-secondary" th:if="${participants.isEmpty()}">
         Keine Teilnehmer gefunden.
     </p>
-</main>
+    </main>
+</div>
 
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
