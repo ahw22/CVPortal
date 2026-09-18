@@ -37,26 +37,26 @@
 
 | Bereich | Testklasse | Testmethoden |
 |---------|------------|:------------:|
-| Security | `security/TokenServiceTest` | 6 |
-|  | `security/JwtConfigTest` | 3 |
-|  | `security/SecurityConfigTest` | 13 |
-|  | `security/JpaUserDetailsServiceTest` | 8 |
-|  | `security/UserPrincipalTest` | 8 |
-| Services | `services/AuthServiceTest` | 14 |
-|  | `services/CvServiceTest` | 18 |
-| Controller | `controller/AuthControllerTest` | 12 |
-|  | `controller/AuthFlowIntegrationTest` | 9 |
-|  | `services/CvControllerTest` | 14 |
-|  | `services/WorkExperienceControllerTest` | 11 |
-| Repositories | `repositories/UserRepositoryTest` | 8 |
-|  | `repositories/WorkExperienceRepositoryTest` | 5 |
-|  | `repositories/EducationRepositoryTest` | 5 |
-|  | `repositories/LanguageRepositoryTest` | 5 |
-|  | `repositories/SkillRepositoryTest` | 5 |
-| Sonstige | `BackendApplicationTests` | 1 |
-|  | `exceptions/GlobalExceptionManagerTest` | 1 |
-|  | `MiscTests` | 1 |
-| **Summe** | **19 Klassen** | **147** |
+| Security | `security/TokenServiceTest` |      6       |
+|  | `security/JwtConfigTest` |      3       |
+|  | `security/SecurityConfigTest` |      12      |
+|  | `security/JpaUserDetailsServiceTest` |      8       |
+|  | `security/UserPrincipalTest` |      8       |
+| Services | `services/AuthServiceTest` |      14      |
+|  | `services/CvServiceTest` |      18      |
+| Controller | `controller/AuthControllerTest` |      12      |
+|  | `controller/AuthFlowIntegrationTest` |      8       |
+|  | `services/CvControllerTest` |      13      |
+|  | `services/WorkExperienceControllerTest` |      10      |
+| Repositories | `repositories/UserRepositoryTest` |      8       |
+|  | `repositories/WorkExperienceRepositoryTest` |      5       |
+|  | `repositories/EducationRepositoryTest` |      5       |
+|  | `repositories/LanguageRepositoryTest` |      5       |
+|  | `repositories/SkillRepositoryTest` |      5       |
+| Sonstige | `BackendApplicationTests` |      1       |
+|  | `exceptions/GlobalExceptionManagerTest` |      1       |
+| | `MiscTests` |      1       |
+| **Summe** | **19 Klassen** |   **143**    |
 
 Das Frontend enthaelt keine automatisierten Tests; es wird ueber die manuellen Testfaelle 1 bis 10 abgedeckt.
 
