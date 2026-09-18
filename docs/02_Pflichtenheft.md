@@ -158,7 +158,7 @@ Der Admin kann Benutzer deaktivieren und Rollen ändern (Teilnehmer ↔ Admin).
 ### F07 – CORS-Demonstration (technisches Kernmerkmal)
 Das Backend konfiguriert CORS zentral über eine `CorsConfigurationSource`-Bean. Die `SecurityFilterChain` bindet diese Bean per `.cors(Customizer.withDefaults())` ein. Die Varianten `@CrossOrigin` und `WebMvcConfigurer` greifen erst im MVC-Layer und sind hier nicht verwendbar. Der `OPTIONS`-Preflight trägt keinen `Authorization`-Header. Die Security-Filterkette weist ihn deshalb mit `401` ab, bevor er einen Controller erreicht.
 
-Die Bean gilt für alle `/api/**`-Pfade. Den Zugriff schränkt die Origin-Whitelist ein, nicht der Pfad. CORS ist kein serverseitiger Zugriffsschutz. Die erlaubte Origin steht in der Property `app.cors.allowed-origins`.
+Die Bean gilt für den Pfad `/api/cv/me/visibility`. Das ist der einzige Endpunkt, den der Browser direkt aufruft. Alle anderen Aufrufe laufen server-zu-server über `RestTemplate` und lösen kein CORS aus. Den Zugriff schränkt zusätzlich die Origin-Whitelist ein. CORS ist kein serverseitiger Zugriffsschutz. Die erlaubte Origin steht in der Property `app.cors.allowed-origins`.
 
 Konkret sichtbar wird das beim Sichtbarkeits-Toggle (F02): Der Browser sendet dabei einen direkten `fetch()`-Aufruf von Origin `localhost:8081` an `localhost:8080` und empfängt die korrekten CORS-Response-Header. Im Browser-DevTools-Netzwerk-Tab ist dieser Preflight- und Antwort-Header-Austausch sichtbar (siehe Abschnitt 11, Kommunikationsmodell).
 
@@ -377,7 +377,7 @@ Im Browser-Netzwerk-Tab ist beim Sichtbarkeits-Toggle (öffentlich/privat, siehe
 | Schnittstelle | Zweck |
 |--------------|-------|
 | `mvn spring-boot:run` | Start beider Applikationen (je in eigenem Terminal) |
-| H2-Konsole (`/h2-console`) | Datenbankinspektion während Entwicklung (nur Backend, nur Dev-Profil) |
+| H2-Konsole (`/h2-console`) | Datenbankinspektion (nur Backend). Im Projektstand dauerhaft aktiv: es gibt kein eigenes Dev-Profil, der Pfad ist per `permitAll()` freigegeben und `frameOptions(sameOrigin)` erlaubt die Darstellung im Frameset. Vertretbar, weil das System ausschließlich lokal läuft und nicht deployt wird. |
 | REST-Client (z.B. Bruno, Postman) | Direktes Testen der Backend-API unabhängig vom Frontend |
 | Git | Zwei Repositories (oder ein Mono-Repo mit zwei Maven-Modulen) |
 
@@ -432,7 +432,8 @@ public CorsConfigurationSource corsConfigurationSource(CorsProperties corsProper
     configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/api/**", configuration);
+    // PATH_API = "/api/cv/me/visibility"
+    source.registerCorsConfiguration(PATH_API, configuration);
     return source;
 }
 ```
@@ -458,26 +459,38 @@ Die Bean muss `corsConfigurationSource` heißen. Nur unter diesem Namen findet `
 
 ```
 cvportal/
-├── cvportal-backend/          ← Maven-Projekt 1 (Port 8080)
+├── backend/                   ← Maven-Projekt 1 (Port 8080)
 │   ├── src/main/java/at/bbrz/cvportal/backend/
-│   │   ├── config/            (SecurityConfig, CorsConfig, JwtConfig)
-│   │   ├── controller/        (AuthController, CvController, CardController, AdminController)
-│   │   ├── dto/               (LoginRequest, JwtResponse, CvDto, CardDto, ...)
-│   │   ├── entity/            (User, CurriculumVitae, WorkExperience, Education, Skill, Language)
-│   │   ├── exception/         (GlobalExceptionHandler, ResourceNotFoundException)
-│   │   ├── repository/        (UserRepository, CvRepository, ...)
-│   │   └── service/           (AuthService, JwtService, CvService, CardService, QrService)
+│   │   ├── config/            (OpenApiConfig)
+│   │   ├── controller/        (AuthController, CvController, CardController, AdminController,
+│   │   │                       WorkExperienceController, EducationController, SkillController,
+│   │   │                       LanguageController)
+│   │   ├── dtos/              (LoginRequest, RegisterRequest, AuthResponse, CvResponse,
+│   │   │                       CvUpdateRequest, CvVisibilityRequest, CardResponse, ...)
+│   │   ├── entities/          (User, CurriculumVitae, WorkExperience, Education, Skill, Language,
+│   │   │                       Role, SkillLevel, LanguageLevel)
+│   │   ├── exceptions/        (GlobalExceptionManager, CvNotFoundException, CvNotPublicException,
+│   │   │                       UserNotFoundException, InvalidCredentialsException, ...)
+│   │   ├── repositories/      (UserRepository, CurriculumVitaeRepository, ...)
+│   │   ├── security/          (SecurityConfig, JwtConfig, JwtProperties, CorsProperties,
+│   │   │                       TokenService, IssuedToken, JpaUserDetailsService, UserPrincipal)
+│   │   └── services/          (AuthService, CvService, CardService, AdminService, CvMapper, ...)
 │   └── src/main/resources/
-│       ├── application.properties
+│       ├── application.yaml
 │       └── data.sql
 │
-└── cvportal-frontend/         ← Maven-Projekt 2 (Port 8081)
+└── frontend/                  ← Maven-Projekt 2 (Port 8081)
     ├── src/main/java/at/bbrz/cvportal/frontend/
-    │   ├── config/            (WebClientConfig – konfiguriert RestTemplate mit Backend-URL)
-    │   ├── controller/        (PageController, CvPageController, CardPageController)
-    │   └── service/           (ApiClientService – alle Calls an das Backend)
+    │   ├── config/            (RestTemplateConfig, BackendProperties)
+    │   ├── controller/        (AuthPageController, CvPageController, AdminPageController,
+    │   │                       PublicPageController, GlobalModelAdvice)
+    │   ├── dtos/              (CvForm, RegisterForm, WorkExperienceForm, EducationForm, ...)
+    │   ├── exceptions/        (ApiException, ApiExceptionHandler)
+    │   ├── security/          (SecurityConfig, BackendAuthenticationProvider, ApiUser)
+    │   └── service/           (ApiClientService, alle Calls an das Backend)
     └── src/main/resources/
-        ├── application.properties  (backend.url=http://localhost:8080)
+        ├── application.yaml   (app.backend.base-url=http://localhost:8080)
+        ├── static/            (theme.css, visibility-toggle.js, Bootstrap)
         └── templates/         (Thymeleaf HTML-Templates)
 ```
 
@@ -486,9 +499,10 @@ cvportal/
 | Maßnahme | Umsetzung |
 |----------|----------|
 | Authentifizierung | JWT (HS256, 8h Gültigkeit) |
-| Passwörter | Argon2id |
+| Passwörter | Argon2id über `Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8()`. Die Factory-Methode legt Saltlänge, Hashlänge, Parallelität, Speicherbedarf und Iterationszahl fest. |
+| JWT-Secret | Umgebungsvariable `CVPORTAL_JWT_SECRET`. Die `application.yaml` enthält nur einen Fallback für die lokale Entwicklung, kein produktives Secret. |
 | CORS | Whitelist: nur Frontend-Origin erlaubt |
-| Autorisierung | Spring Security Method-Security (`@PreAuthorize`) |
+| Autorisierung | Pfadbasiert in der `SecurityFilterChain` (`authorizeHttpRequests` mit `hasRole`) |
 | Eingabevalidierung | Bean Validation auf allen DTOs |
 | SQL-Injection | Ausschließlich JPA/JPQL-Abfragen |
 | XSS | Thymeleaf escaped standardmäßig; kein `th:utext` auf Benutzerdaten |
