@@ -46,7 +46,6 @@ public class SecurityConfig {
                         // /cv/edit muss vor /cv/* stehen da sonst die wildcard zuerst gilt
                         .requestMatchers(PATH_DASHBOARD, PATH_CV_EDIT).hasRole("TEILNEHMER")
                         .requestMatchers(HttpMethod.GET, PATH_PUBLIC_CV, PATH_PUBLIC_CARD).permitAll()
-                        .requestMatchers(HttpMethod.GET, PATH_PUBLIC_CV, PATH_PUBLIC_CARD).permitAll()
 
                         .requestMatchers(PATH_ADMIN).hasRole(ROLE_ADMIN)
                         .anyRequest().authenticated()
