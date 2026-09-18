@@ -14,6 +14,9 @@
         <th:block th:if="${param.registered != null}">
             <div th:replace="~{fragments/alerts :: alert('success', 'Ihr Konto wurde angelegt. Bitte melden Sie sich an.')}"></div>
         </th:block>
+        <th:block th:if="${param.abgelaufen != null}">
+            <div th:replace="~{fragments/alerts :: alert('info', 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.')}"></div>
+        </th:block>
         <th:block th:if="${param.logout != null}">
             <div th:replace="~{fragments/alerts :: alert('info', 'Sie wurden abgemeldet.')}"></div>
         </th:block>

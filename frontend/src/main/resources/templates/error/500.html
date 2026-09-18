@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="deepocean" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Fehler')}"></head>
+<body>
+<main class="auth-wrap text-center">
+    <div class="auth-card">
+        <div class="h1 text-body-secondary">Fehler</div>
+        <h1 class="h4 mt-2">Die Seite konnte nicht geladen werden</h1>
+
+        <p class="text-body-secondary mt-3"
+           th:text="${meldung} ?: 'Bitte versuchen Sie es später erneut.'">
+            Bitte versuchen Sie es später erneut.
+        </p>
+
+        <a class="btn btn-secondary mt-3" th:href="@{/}">Zur Startseite</a>
+    </div>
+</main>
+</body>
+</html>
